@@ -273,15 +273,76 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer Info & Submission Notice */}
-      <footer className="mt-20 border-t border-white/10 bg-goa-dark/90 py-8 px-4 text-center text-xs text-goa-cream/60">
-        <div className="mx-auto max-w-4xl flex flex-col items-center gap-3">
-          <p className="flex items-center gap-1.5 font-bold text-goa-cream">
-            Built with <Heart className="h-4 w-4 fill-current text-goa-pink" /> for HH Goa 2026 • Fullstack MERN Next.js Vercel Architecture
-          </p>
-          <p className="text-[11px] text-goa-cream/50">
-            ⚠ Remember: Submissions without an X post containing <span className="text-goa-gold font-bold">#FrameInGoa</span> will be treated as invalid. Deadline: 11:59 pm, 13th August 2026.
-          </p>
+      {/* Rich Goan Hacker House Footer */}
+      <footer className="relative mt-24 border-t border-goa-gold/30 bg-gradient-to-b from-[#011c14] via-[#023524] to-[#011c14] pt-12 pb-10 text-goa-cream">
+        {/* Top Accent Gradient Bar */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-goa-pink via-goa-gold to-emerald-400" />
+
+        <div className="mx-auto max-w-5xl px-4 flex flex-col items-center gap-8">
+          
+          {/* Brand Header */}
+          <div className="flex flex-col items-center text-center gap-2">
+            <h3 className="font-syne text-2xl md:text-3xl font-black text-goa-gold tracking-wider flex items-center gap-2">
+              <span>🌴</span> HACKER HOUSE GOA 2026 <span>🌴</span>
+            </h3>
+            <p className="text-xs font-extrabold uppercase tracking-widest text-goa-cream/80">
+              ✦ BUILD IN GOA, SHIP FROM PARADISE ✦
+            </p>
+          </div>
+
+          {/* Critical Submission Warning Banner */}
+          <div className="w-full max-w-2xl rounded-2xl border border-goa-gold/40 bg-goa-dark/80 p-5 backdrop-blur-md shadow-2xl flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left glow-gold">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-goa-gold/20 text-2xl text-goa-gold border border-goa-gold/40">
+              ⚠️
+            </div>
+            <div className="flex flex-col gap-1 text-xs">
+              <span className="font-extrabold text-goa-gold text-sm">
+                Mandatory Submission Requirement
+              </span>
+              <p className="text-goa-cream/90 leading-relaxed">
+                Your submission will be flagged as invalid if your X post doesn&apos;t contain the hashtag{' '}
+                <span className="font-black text-goa-gold bg-goa-gold/10 px-2 py-0.5 rounded border border-goa-gold/30">#FrameInGoa</span>.
+              </p>
+              <p className="text-[11px] font-semibold text-rose-300">
+                ⏰ Deadline: 11:59 PM, 13th August 2026
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Links & Resources */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-extrabold">
+            <a
+              href="https://forms.gle/jM5hTaGvsrfEfixPA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-xl border border-goa-pink/40 bg-goa-pink/10 px-4 py-2.5 text-goa-pink transition hover:bg-goa-pink hover:text-white"
+            >
+              <span>📝 Official Submission Form</span>
+            </a>
+
+            <a
+              href="https://github.com/atul-techx/HackerHouse-GOA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-goa-cream transition hover:bg-white/10"
+            >
+              <span>💻 GitHub Repository</span>
+            </a>
+
+            <button
+              onClick={() => setIsShareOpen(true)}
+              className="flex items-center gap-2 rounded-xl border border-goa-gold/40 bg-goa-gold/10 px-4 py-2.5 text-goa-gold transition hover:bg-goa-gold hover:text-goa-dark"
+            >
+              <span>🚀 Share #FrameInGoa on X</span>
+            </button>
+          </div>
+
+          {/* Bottom Copyright */}
+          <div className="border-t border-white/10 w-full pt-6 text-center text-[11px] text-goa-cream/50 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>© 2026 Hacker House Goa — Official Frame &amp; Builder ID Generator</span>
+            <span>Made for Goan Builders &amp; Hackers 🌊</span>
+          </div>
+
         </div>
       </footer>
 
