@@ -177,7 +177,49 @@ export function downloadCanvasAsPNG(canvas: HTMLCanvasElement, fileName: string)
 }
 
 /**
- * CURVED ARC TEXT HELPER (For Top & Bottom of Circular Seals)
+ * VECTOR PALM TREE (For Center of Circular Postmark Seal)
+ */
+function drawVectorPalmTree(ctx: CanvasRenderingContext2D, cx: number, cy: number, scale: number = 1.0) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale(scale, scale);
+
+  // Trunk
+  ctx.beginPath();
+  ctx.moveTo(-3.5, 22);
+  ctx.quadraticCurveTo(-1, 0, -2, -10);
+  ctx.lineTo(2.5, -10);
+  ctx.quadraticCurveTo(3.5, 0, 3.5, 22);
+  ctx.closePath();
+  ctx.fillStyle = '#044f37';
+  ctx.fill();
+
+  // Leaves / Fronds
+  const fronds = [
+    { startX: -2, startY: -10, cpX: -18, cpY: -30, endX: -26, endY: -16 },
+    { startX: 2, startY: -10, cpX: 18, cpY: -30, endX: 26, endY: -16 },
+    { startX: -2, startY: -10, cpX: -28, cpY: -18, endX: -32, endY: 2 },
+    { startX: 2, startY: -10, cpX: 28, cpY: -18, endX: 32, endY: 2 },
+    { startX: 0, startY: -10, cpX: -6, cpY: -36, endX: -4, endY: -38 },
+    { startX: 0, startY: -10, cpX: 6, cpY: -36, endX: 4, endY: -38 },
+  ];
+
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+
+  for (const f of fronds) {
+    ctx.beginPath();
+    ctx.moveTo(f.startX, f.startY);
+    ctx.quadraticCurveTo(f.cpX, f.cpY, f.endX, f.endY);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+/**
+ * CURVED ARC TEXT HELPER (For Top & Bottom of Circular Seal - Exact Image 2 Match)
  */
 function drawCurvedArcText(
   ctx: CanvasRenderingContext2D,
@@ -185,25 +227,26 @@ function drawCurvedArcText(
   radius: number,
   startAngle: number,
   endAngle: number,
-  inside: boolean = false,
+  isBottom: boolean = false,
   color: string = '#044f37',
-  fontSize: number = 10
+  fontSize: number = 9.5
 ) {
   ctx.save();
-  ctx.font = `900 ${fontSize}px "Syne", "Space Grotesk", sans-serif`;
+  ctx.font = `900 ${fontSize}px "Space Grotesk", "Syne", sans-serif`;
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
   const len = text.length;
-  const step = len > 1 ? (endAngle - startAngle) / (len - 1) : 0;
+  const totalAngle = endAngle - startAngle;
+  const step = len > 1 ? totalAngle / (len - 1) : 0;
 
   for (let i = 0; i < len; i++) {
     const angle = startAngle + i * step;
     ctx.save();
     ctx.rotate(angle);
-    ctx.translate(0, inside ? radius : -radius);
-    if (inside) {
+    ctx.translate(0, isBottom ? radius : -radius);
+    if (isBottom) {
       ctx.rotate(Math.PI);
     }
     ctx.fillText(text[i], 0, 0);
@@ -619,7 +662,7 @@ export async function renderFormatAPFP(
 }
 
 // ----------------------------------------------------
-// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT IMAGE 2 CIRCULAR SEAL MATCH)
+// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT MATCH FOR IMAGE 2 SEAL)
 // ----------------------------------------------------
 export async function renderFormatBBadge(
   canvas: HTMLCanvasElement,
@@ -682,10 +725,7 @@ export async function renderFormatBBadge(
   ctx.stroke();
   ctx.restore();
 
-  // ----------------------------------------------------
   // TOP BAR: STAMP (LEFT), TAB (CENTER), CIRCULAR SEAL (RIGHT)
-  // ----------------------------------------------------
-
   // Center Top Hanging Tab Ribbon ("HH GOA 2026")
   ctx.save();
   drawRoundedRect(ctx, width / 2 - 70, cardY + 38, 140, 100, 16);
@@ -751,7 +791,7 @@ export async function renderFormatBBadge(
   ctx.restore();
 
   // ----------------------------------------------------
-  // RIGHT TOP CIRCULAR POSTMARK SEAL (EXACT MATCH FOR USER'S REFERENCE IMAGE 2!)
+  // RIGHT TOP CIRCULAR POSTMARK SEAL (100% EXACT MATCH FOR USER'S IMAGE 2!)
   // ----------------------------------------------------
   ctx.save();
   const sealX = cardX + cardW - 85;
@@ -765,32 +805,29 @@ export async function renderFormatBBadge(
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
-  // Inner dashed green circle ring
+  // Inner solid green circle ring (matching Image 2)
   ctx.beginPath();
-  ctx.arc(0, 0, 46, 0, Math.PI * 2);
+  ctx.arc(0, 0, 48, 0, Math.PI * 2);
   ctx.strokeStyle = '#044f37';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([4, 4]);
+  ctx.lineWidth = 1.2;
   ctx.stroke();
-  ctx.setLineDash([]);
 
-  // Prominent Palm Tree Icon in Center 🌴
-  ctx.font = '36px sans-serif';
+  // Vector Palm Tree in Center 🌴 (Vector path matching Image 2)
+  drawVectorPalmTree(ctx, 0, 0, 0.95);
+
+  // Left '+' and Right '+' Plus symbols (Matching Image 2)
+  ctx.fillStyle = '#044f37';
+  ctx.font = '900 15px "Space Grotesk", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🌴', 0, 2);
+  ctx.fillText('+', -35, 0);
+  ctx.fillText('+', 35, 0);
 
-  // Left '+' and Right '+' Plus symbols
-  ctx.fillStyle = '#044f37';
-  ctx.font = '900 16px "Syne", sans-serif';
-  ctx.fillText('+', -34, 2);
-  ctx.fillText('+', 34, 2);
+  // Top Arc Text: "BUILD IN GOA" (Curved along top arc, reading upright left to right)
+  drawCurvedArcText(ctx, 'BUILD IN GOA', 35, -Math.PI * 0.38, Math.PI * 0.38, false, '#044f37', 9.5);
 
-  // Top Arc Text: "BUILD IN GOA" (Curved along top arc)
-  drawCurvedArcText(ctx, 'BUILD IN GOA', 35, -Math.PI * 0.42, Math.PI * 0.42, false, '#044f37', 10);
-
-  // Bottom Arc Text: "SHIP FROM PARADISE" (Curved along bottom arc)
-  drawCurvedArcText(ctx, 'SHIP FROM PARADISE', 35, Math.PI * 0.72, Math.PI * 0.28, true, '#044f37', 9.5);
+  // Bottom Arc Text: "SHIP FROM PARADISE" (Curved along bottom arc, reading upright left to right)
+  drawCurvedArcText(ctx, 'SHIP FROM PARADISE', 35, Math.PI * 0.76, Math.PI * 0.24, true, '#044f37', 9);
 
   ctx.restore();
 
