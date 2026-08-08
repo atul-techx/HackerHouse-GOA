@@ -88,6 +88,30 @@ export function drawRoundedRect(
 }
 
 /**
+ * 4-POINT SPARKLE STAR HELPER
+ */
+export function drawSparkleStar(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  size: number,
+  color: string = '#ff1e79'
+) {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(0, -size);
+  ctx.quadraticCurveTo(0, 0, size, 0);
+  ctx.quadraticCurveTo(0, 0, 0, size);
+  ctx.quadraticCurveTo(0, 0, -size, 0);
+  ctx.quadraticCurveTo(0, 0, 0, -size);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+/**
  * AUTO FONT SCALING HELPER
  */
 export function drawTextAutoFit(
@@ -673,6 +697,59 @@ export async function renderFormatBBadge(
   ctx.lineWidth = 2.5;
   ctx.stroke();
   ctx.restore();
+
+  // ----------------------------------------------------
+  // SCATTERED RETRO GOAN SPARKLE STARS ACROSS CARD BACKGROUND
+  // ----------------------------------------------------
+  const starPositions = [
+    { x: cardX + 160, y: cardY + 70, s: 8, c: '#ff1e79' },
+    { x: cardX + 180, y: cardY + 115, s: 6, c: '#ffc700' },
+    { x: cardX + cardW - 160, y: cardY + 75, s: 9, c: '#ffc700' },
+    { x: cardX + cardW - 180, y: cardY + 125, s: 6, c: '#ff1e79' },
+    { x: cardX + 55, y: cardY + 220, s: 7, c: '#044f37' },
+    { x: cardX + cardW - 55, y: cardY + 220, s: 7, c: '#044f37' },
+    { x: cardX + 45, y: cardY + 280, s: 10, c: '#ff1e79' },
+    { x: cardX + cardW - 45, y: cardY + 280, s: 9, c: '#ffc700' },
+    { x: cardX + 380, y: cardY + 265, s: 7, c: '#ffc700' },
+    { x: cardX + 60, y: cardY + 440, s: 8, c: '#ffc700' },
+    { x: cardX + 330, y: cardY + 410, s: 6, c: '#044f37' },
+    { x: cardX + cardW - 35, y: cardY + 440, s: 9, c: '#ff1e79' },
+    { x: cardX + 680, y: cardY + 490, s: 7, c: '#ffc700' },
+    { x: cardX + 360, y: cardY + 620, s: 8, c: '#ff1e79' },
+    // Stars around and inside QR Code area (so white background looks lively & retro!)
+    { x: cardX + 415, y: cardY + 640, s: 9, c: '#ff1e79' },
+    { x: cardX + 435, y: cardY + 625, s: 11, c: '#ffc700' },
+    { x: cardX + 625, y: cardY + 630, s: 8, c: '#044f37' },
+    { x: cardX + 635, y: cardY + 700, s: 12, c: '#ff1e79' },
+    { x: cardX + 640, y: cardY + 780, s: 9, c: '#ffc700' },
+    { x: cardX + 420, y: cardY + 750, s: 8, c: '#ffc700' },
+    { x: cardX + 435, y: cardY + 810, s: 7, c: '#ff1e79' },
+    { x: cardX + 530, y: cardY + 825, s: 9, c: '#044f37' },
+    { x: cardX + 610, y: cardY + 830, s: 8, c: '#ff1e79' },
+  ];
+
+  for (const star of starPositions) {
+    drawSparkleStar(ctx, star.x, star.y, star.s, star.c);
+  }
+
+  // Tiny scattered sparkle dots
+  const dots = [
+    { x: cardX + 190, y: cardY + 90, c: '#044f37' },
+    { x: cardX + cardW - 190, y: cardY + 95, c: '#044f37' },
+    { x: cardX + 45, y: cardY + 480, c: '#ff1e79' },
+    { x: cardX + cardW - 50, y: cardY + 520, c: '#ffc700' },
+    { x: cardX + 440, y: cardY + 670, c: '#ff1e79' },
+    { x: cardX + 620, y: cardY + 670, c: '#ffc700' },
+    { x: cardX + 630, y: cardY + 750, c: '#044f37' },
+    { x: cardX + 430, y: cardY + 780, c: '#ff1e79' },
+    { x: cardX + 580, y: cardY + 815, c: '#ffc700' },
+  ];
+  for (const d of dots) {
+    ctx.fillStyle = d.c;
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
   // TOP BAR: STAMP (LEFT), TAB (CENTER), CIRCULAR SEAL (RIGHT)
   // Center Top Hanging Tab Ribbon ("HH GOA 2026")
