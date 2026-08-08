@@ -51,7 +51,6 @@ export function drawRoundedRect(
 
 /**
  * AUTO FONT SCALING HELPER
- * Scales down font size automatically so text never overflows maxWidth!
  */
 export function drawTextAutoFit(
   ctx: CanvasRenderingContext2D,
@@ -177,6 +176,267 @@ export function downloadCanvasAsPNG(canvas: HTMLCanvasElement, fileName: string)
   }, 'image/png', 1.0);
 }
 
+/**
+ * COMBINATION ILLUSTRATION: GOAN HACKER VILLA + TROPICAL SUNSET BEACH
+ * Combines Image 2 (5 hackers at outdoor wooden table under Goan villa)
+ * and Image 3 (Sunset sun, ocean, palm trees, surfboards & shacks)
+ */
+function drawGoanHackerBeachIllustration(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number
+) {
+  ctx.save();
+  ctx.beginPath();
+  drawRoundedRect(ctx, x, y, width, height, 16);
+  ctx.clip();
+
+  // 1. Sunset Sky Background
+  const skyGrad = ctx.createLinearGradient(x, y, x, y + height);
+  skyGrad.addColorStop(0, '#044f37');
+  skyGrad.addColorStop(0.4, '#067a57');
+  skyGrad.addColorStop(1, '#fffbea');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(x, y, width, height);
+
+  // 2. Large Sun on Horizon
+  const sunCX = x + width / 2;
+  const sunCY = y + 70;
+  ctx.fillStyle = '#ffc700';
+  ctx.beginPath();
+  ctx.arc(sunCX, sunCY, 42, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Sunbeams
+  ctx.strokeStyle = 'rgba(255, 199, 0, 0.4)';
+  ctx.lineWidth = 2.5;
+  for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
+    ctx.beginPath();
+    ctx.moveTo(sunCX + Math.cos(angle) * 46, sunCY + Math.sin(angle) * 46);
+    ctx.lineTo(sunCX + Math.cos(angle) * 64, sunCY + Math.sin(angle) * 64);
+    ctx.stroke();
+  }
+
+  // 3. Ocean Water & Shore
+  const waterY = y + 75;
+  ctx.fillStyle = '#044f37';
+  ctx.fillRect(x, waterY, width, 45);
+
+  // White Wave Ripples
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 4; i++) {
+    ctx.beginPath();
+    ctx.moveTo(x + i * 180, waterY + 15 + (i % 2) * 10);
+    ctx.quadraticCurveTo(x + i * 180 + 40, waterY + 8, x + i * 180 + 80, waterY + 15);
+    ctx.stroke();
+  }
+
+  // Sand Shore Line
+  const sandY = waterY + 35;
+  ctx.fillStyle = '#fffbea';
+  ctx.beginPath();
+  ctx.moveTo(x, sandY);
+  ctx.quadraticCurveTo(x + width / 2, sandY - 10, x + width, sandY);
+  ctx.lineTo(x + width, y + height);
+  ctx.lineTo(x, y + height);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 4. LEFT SIDE: GOAN HACKER VILLA (from Image 2)
+  const villaX = x + 15;
+  const villaY = y + 45;
+  const villaW = 160;
+  const villaH = 110;
+
+  // Red Tiled Roof
+  drawRoundedRect(ctx, villaX - 5, villaY - 12, villaW + 10, 18, 4);
+  ctx.fillStyle = '#e11d48';
+  ctx.fill();
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Villa White Wall
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(villaX, villaY, villaW, villaH);
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(villaX, villaY, villaW, villaH);
+
+  // Green Window Shutters with Pink Slats
+  for (let w = 0; w < 3; w++) {
+    const wx = villaX + 15 + w * 48;
+    const wy = villaY + 20;
+    drawRoundedRect(ctx, wx, wy, 34, 55, 4);
+    ctx.fillStyle = '#044f37';
+    ctx.fill();
+    ctx.strokeStyle = '#ffc700';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Inner Pink Shutters
+    ctx.fillStyle = '#ff1e79';
+    ctx.fillRect(wx + 4, wy + 4, 12, 47);
+    ctx.fillRect(wx + 18, wy + 4, 12, 47);
+  }
+
+  // Pink Bougainvillea Flower Vine on Left Wall
+  ctx.fillStyle = '#ff1e79';
+  for (let f = 0; f < 8; f++) {
+    ctx.beginPath();
+    ctx.arc(villaX - 2 + (f % 2) * 6, villaY + 15 + f * 12, 5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // 5. RIGHT SIDE: GOA BEACH SHACK & SURFBOARDS (from Image 3)
+  const shackX = x + width - 175;
+  const shackY = y + 55;
+  const shackW = 155;
+  const shackH = 100;
+
+  // Shack Base & Roof
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(shackX, shackY, shackW, shackH);
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(shackX, shackY, shackW, shackH);
+
+  drawRoundedRect(ctx, shackX - 8, shackY - 14, shackW + 16, 18, 5);
+  ctx.fillStyle = '#044f37';
+  ctx.fill();
+
+  // "GOA BEACH" Sign Board
+  drawRoundedRect(ctx, shackX + 25, shackY + 10, 105, 24, 6);
+  ctx.fillStyle = '#ff1e79';
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '900 11px "Syne", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('GOA BEACH', shackX + 77, shackY + 26);
+
+  // Propped Up Surfboards (Yellow & Pink)
+  // Surfboard 1 (Yellow)
+  ctx.save();
+  ctx.translate(shackX - 18, shackY + 30);
+  ctx.rotate((-12 * Math.PI) / 180);
+  ctx.beginPath();
+  ctx.ellipse(0, 30, 10, 38, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffc700';
+  ctx.fill();
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.restore();
+
+  // Surfboard 2 (Pink)
+  ctx.save();
+  ctx.translate(shackX - 6, shackY + 30);
+  ctx.rotate((-5 * Math.PI) / 180);
+  ctx.beginPath();
+  ctx.ellipse(0, 30, 10, 38, 0, 0, Math.PI * 2);
+  ctx.fillStyle = '#ff1e79';
+  ctx.fill();
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.restore();
+
+  // 6. CENTER BOTTOM: 5 HACKERS CODING AT OUTDOOR TABLE (from Image 2)
+  const tableX = x + 165;
+  const tableY = y + height - 55;
+  const tableW = 410;
+  const tableH = 14;
+
+  // Wooden Long Table
+  drawRoundedRect(ctx, tableX, tableY, tableW, tableH, 4);
+  ctx.fillStyle = '#a16207';
+  ctx.fill();
+  ctx.strokeStyle = '#044f37';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Table Legs
+  for (let leg = 0; leg < 4; leg++) {
+    const lx = tableX + 30 + leg * 110;
+    ctx.fillStyle = '#78350f';
+    ctx.fillRect(lx, tableY + tableH, 10, 35);
+  }
+
+  // 5 Developers with Laptops (Green, Yellow, Pink, White shirts)
+  const shirtColors = ['#044f37', '#ffc700', '#ff1e79', '#ffffff', '#044f37'];
+
+  for (let d = 0; d < 5; d++) {
+    const dx = tableX + 35 + d * 82;
+    const dy = tableY - 42;
+
+    // Head
+    ctx.fillStyle = '#fbcfe8';
+    ctx.beginPath();
+    ctx.arc(dx, dy + 10, 13, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#044f37';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Eyes & Smile
+    ctx.fillStyle = '#044f37';
+    ctx.beginPath();
+    ctx.arc(dx - 4, dy + 8, 2, 0, Math.PI * 2);
+    ctx.arc(dx + 4, dy + 8, 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Shirt Body
+    ctx.fillStyle = shirtColors[d];
+    drawRoundedRect(ctx, dx - 18, dy + 24, 36, 22, 6);
+    ctx.fill();
+    ctx.strokeStyle = '#044f37';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Laptop (Open Lid)
+    ctx.fillStyle = '#023524';
+    drawRoundedRect(ctx, dx - 16, dy + 28, 32, 16, 3);
+    ctx.fill();
+    ctx.strokeStyle = '#ffc700';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Laptop Glowing Screen Accent
+    ctx.fillStyle = d % 2 === 0 ? '#10b981' : '#ff1e79';
+    ctx.fillRect(dx - 12, dy + 31, 24, 10);
+
+    // Coffee Cup / Drinks on Table
+    ctx.fillStyle = '#ffffff';
+    drawRoundedRect(ctx, dx + 20, tableY - 14, 8, 12, 2);
+    ctx.fill();
+    ctx.strokeStyle = '#044f37';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 7. TALL TROPICAL PALM TREES ON BOTH SIDES
+  // Left Palm Tree 🌴
+  ctx.save();
+  ctx.font = '65px sans-serif';
+  ctx.fillText('🌴', x + 5, y + 105);
+  ctx.fillText('🌴', x + width - 75, y + 105);
+  ctx.restore();
+
+  // Pink Scooter 🛵 on Right
+  ctx.save();
+  ctx.font = '36px sans-serif';
+  ctx.fillText('🛵', x + width - 110, y + height - 25);
+  ctx.restore();
+
+  ctx.restore();
+}
+
 // ----------------------------------------------------
 // FORMAT A: PFP FRAME CANVAS RENDERER
 // ----------------------------------------------------
@@ -194,7 +454,6 @@ export async function renderFormatAPFP(
   canvas.width = size;
   canvas.height = size;
 
-  // Background gradient
   const bgGrad = ctx.createLinearGradient(0, 0, size, size);
   bgGrad.addColorStop(0, '#011c14');
   bgGrad.addColorStop(0.5, '#044f37');
@@ -272,7 +531,6 @@ export async function renderFormatAPFP(
 
   ctx.restore();
 
-  // Top Stamp Badge
   ctx.save();
   ctx.translate(cx, 80);
   drawRoundedRect(ctx, -180, -30, 360, 60, 16);
@@ -289,7 +547,6 @@ export async function renderFormatAPFP(
   ctx.fillText('🌴 HH GOA 2026 🌴', 0, 0);
   ctx.restore();
 
-  // Bottom Banner
   ctx.save();
   ctx.translate(cx, size - 100);
 
@@ -315,7 +572,6 @@ export async function renderFormatAPFP(
   ctx.fillText('BUILD IN GOA, SHIP FROM PARADISE • 28-31 OCT', 0, 24);
   ctx.restore();
 
-  // Corner Hashtag Badge
   ctx.save();
   ctx.translate(size - 130, 130);
   ctx.rotate((12 * Math.PI) / 180);
@@ -350,7 +606,7 @@ export async function renderFormatAPFP(
 }
 
 // ----------------------------------------------------
-// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT IMAGE 5 MATCH)
+// FORMAT B: BUILDER ID BADGE CANVAS RENDERER
 // ----------------------------------------------------
 export async function renderFormatBBadge(
   canvas: HTMLCanvasElement,
@@ -370,7 +626,6 @@ export async function renderFormatBBadge(
   ctx.fillStyle = '#023524';
   ctx.fillRect(0, 0, width, height);
 
-  // Outer border lines
   ctx.strokeStyle = '#08694b';
   ctx.lineWidth = 6;
   ctx.strokeRect(6, 6, width - 12, height - 12);
@@ -387,7 +642,7 @@ export async function renderFormatBBadge(
   ctx.shadowBlur = 20;
   ctx.shadowOffsetY = 8;
   drawRoundedRect(ctx, cardX, cardY, cardW, cardH, 28);
-  ctx.fillStyle = '#fcf8e3'; // Authentic warm cream card background
+  ctx.fillStyle = '#fcf8e3';
   ctx.fill();
   ctx.restore();
 
@@ -414,10 +669,7 @@ export async function renderFormatBBadge(
   ctx.stroke();
   ctx.restore();
 
-  // ----------------------------------------------------
   // TOP BAR: STAMP (LEFT), TAB (CENTER), SEAL (RIGHT)
-  // ----------------------------------------------------
-  
   // Center Top Hanging Tab Ribbon ("HH GOA 2026")
   ctx.save();
   drawRoundedRect(ctx, width / 2 - 70, cardY + 38, 140, 100, 16);
@@ -454,7 +706,6 @@ export async function renderFormatBBadge(
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // Inner Stamp Content
   ctx.fillStyle = '#e11d48';
   ctx.font = '900 15px "Syne", sans-serif';
   ctx.fillText('GOA', stampX + 12, stampY + 22);
@@ -463,7 +714,6 @@ export async function renderFormatBBadge(
   ctx.font = '800 12px "Syne", sans-serif';
   ctx.fillText('INDIA', stampX + 12, stampY + 38);
 
-  // Stamp Artwork (Sun + Ocean + Palm)
   ctx.fillStyle = '#ffc700';
   ctx.beginPath();
   ctx.arc(stampX + 70, stampY + 75, 18, 0, Math.PI * 2);
@@ -473,7 +723,6 @@ export async function renderFormatBBadge(
   ctx.font = '22px sans-serif';
   ctx.fillText('🌴', stampX + 44, stampY + 92);
 
-  // Red Wavy Cancellation Lines
   ctx.strokeStyle = '#e11d48';
   ctx.lineWidth = 2;
   for (let i = 0; i < 3; i++) {
@@ -485,7 +734,7 @@ export async function renderFormatBBadge(
   }
   ctx.restore();
 
-  // Right Top Circular Postmark Seal ("BUILD IN GOA • SHIP FROM PARADISE")
+  // Right Top Circular Postmark Seal
   ctx.save();
   const sealX = cardX + cardW - 85;
   const sealY = cardY + 110;
@@ -513,9 +762,8 @@ export async function renderFormatBBadge(
   ctx.fillText('SHIP FROM PARADISE', 0, 26);
   ctx.restore();
 
-  // Vertical Text on Left & Right Margins (Matching Image 5)
+  // Vertical Text on Left & Right Margins
   ctx.save();
-  // Left Vertical: 28 - 31 OCT 2026
   ctx.translate(cardX + 22, cardY + 360);
   ctx.rotate((-90 * Math.PI) / 180);
   ctx.fillStyle = '#e11d48';
@@ -525,7 +773,6 @@ export async function renderFormatBBadge(
   ctx.restore();
 
   ctx.save();
-  // Right Vertical: ✦ GOA, INDIA ✦
   ctx.translate(cardX + cardW - 22, cardY + 360);
   ctx.rotate((90 * Math.PI) / 180);
   ctx.fillStyle = '#e11d48';
@@ -534,28 +781,22 @@ export async function renderFormatBBadge(
   ctx.fillText('✦ GOA, INDIA ✦', 0, 0);
   ctx.restore();
 
-  // ----------------------------------------------------
   // LOGO HEADER: HACKER HOUSE + GOA (EXACT MATCH FOR IMAGE 3)
-  // ----------------------------------------------------
   ctx.save();
   const headerY = cardY + 200;
 
-  // Draw HACKER on left and HOUSE on right in tall gold serif
   ctx.fillStyle = '#ffc700';
   ctx.font = '900 60px "Cinzel", "Playfair Display", serif';
   ctx.textAlign = 'center';
 
-  // HACKER (left of center) & HOUSE (right of center)
   const leftX = width / 2 - 165;
   const rightX = width / 2 + 165;
   ctx.fillText('HACKER', leftX, headerY);
   ctx.fillText('HOUSE', rightX, headerY);
 
-  // Overlay "गोवा" in glowing bright pink in exact center over the gap
   const goaCenterX = width / 2;
   const goaCenterY = headerY - 12;
 
-  // Background glow / outline for Devanagari "गोवा"
   ctx.font = '900 52px "Syne", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -567,21 +808,17 @@ export async function renderFormatBBadge(
   ctx.fillStyle = '#ff1e79';
   ctx.fillText('गोवा', goaCenterX, goaCenterY);
 
-  // Subtitle slogan line: ✦ BUILD IN GOA, SHIP FROM PARADISE ✦
   ctx.fillStyle = '#044f37';
   ctx.font = '800 15px "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText('✦ BUILD IN GOA, SHIP FROM PARADISE ✦', width / 2, headerY + 32);
   ctx.restore();
 
-  // ----------------------------------------------------
   // MIDDLE SECTION: PHOTO (LEFT) & USER DETAILS (RIGHT)
-  // ----------------------------------------------------
   const photoCX = cardX + 195;
   const photoCY = cardY + 440;
   const photoRadius = 140;
 
-  // Photo Frame Outer Stitched Ring
   ctx.save();
   ctx.beginPath();
   ctx.arc(photoCX, photoCY, photoRadius + 12, 0, Math.PI * 2);
@@ -593,7 +830,6 @@ export async function renderFormatBBadge(
   ctx.fillStyle = '#ffc700';
   ctx.fill();
 
-  // Inner stitched pattern
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2.5;
   ctx.setLineDash([8, 8]);
@@ -603,7 +839,6 @@ export async function renderFormatBBadge(
   ctx.setLineDash([]);
   ctx.restore();
 
-  // User Photo Render
   if (photoImg) {
     drawUserPhoto(ctx, photoImg, photoCX, photoCY, photoRadius * 2, photoRadius * 2, transform, true);
   } else {
@@ -619,7 +854,6 @@ export async function renderFormatBBadge(
     ctx.restore();
   }
 
-  // Rotated "BUILDER" Badge on photo
   ctx.save();
   ctx.translate(photoCX - 85, photoCY + 75);
   ctx.rotate((-14 * Math.PI) / 180);
@@ -637,13 +871,10 @@ export async function renderFormatBBadge(
   ctx.fillText('BUILDER', 0, 0);
   ctx.restore();
 
-  // ----------------------------------------------------
-  // RIGHT SIDE: USER DETAILS (WITH AUTO-FIT FONT SCALING)
-  // ----------------------------------------------------
+  // RIGHT SIDE: USER DETAILS
   const infoX = cardX + 370;
-  const maxInfoWidth = cardW - 395; // Keeps text STRICTLY inside the card bounds!
+  const maxInfoWidth = cardW - 395;
 
-  // 1. Full Name (Auto-fitted)
   ctx.save();
   const nameUpper = (data.name || 'ATUL GANGWAR').toUpperCase();
   const nameLines = nameUpper.length > 13 ? [nameUpper.slice(0, 13), nameUpper.slice(13)] : [nameUpper];
@@ -653,11 +884,9 @@ export async function renderFormatBBadge(
     drawTextAutoFit(ctx, nameLines[1], infoX, photoCY - 35, maxInfoWidth, 42, '"Syne", sans-serif', '900', '#044f37');
   }
 
-  // 2. Primary Role / Title
   const roleY = nameLines[1] ? photoCY + 8 : photoCY - 35;
   drawTextAutoFit(ctx, `✦ ${(data.role || 'SOFTWARE DEVELOPER').toUpperCase()} ✦`, infoX, roleY, maxInfoWidth, 18, '"Plus Jakarta Sans", sans-serif', '800', '#e11d48');
 
-  // Dashed separator line
   ctx.strokeStyle = 'rgba(4, 79, 55, 0.3)';
   ctx.lineWidth = 2;
   ctx.setLineDash([5, 5]);
@@ -667,10 +896,8 @@ export async function renderFormatBBadge(
   ctx.stroke();
   ctx.setLineDash([]);
 
-  // 3. STAT ITEMS WITH AUTO-FIT
   const statsStartY = roleY + 38;
 
-  // Stat 1: BUILDER CLASS
   ctx.fillStyle = '#044f37';
   ctx.font = '800 12px "Syne", sans-serif';
   ctx.textAlign = 'left';
@@ -678,7 +905,6 @@ export async function renderFormatBBadge(
 
   drawTextAutoFit(ctx, (data.builderClass || 'TERMINAL WIZARD').toUpperCase(), infoX + 42, statsStartY + 20, maxInfoWidth - 45, 17, '"Syne", sans-serif', '900', '#e11d48');
 
-  // Icon 1 (Palm)
   ctx.fillStyle = '#ffc700';
   ctx.beginPath();
   ctx.arc(infoX + 16, statsStartY + 10, 16, 0, Math.PI * 2);
@@ -688,7 +914,6 @@ export async function renderFormatBBadge(
   ctx.textAlign = 'center';
   ctx.fillText('🌴', infoX + 16, statsStartY + 16);
 
-  // Stat 2: SKILLS / STACK
   const stat2Y = statsStartY + 54;
   ctx.fillStyle = '#044f37';
   ctx.font = '800 12px "Syne", sans-serif';
@@ -697,7 +922,6 @@ export async function renderFormatBBadge(
 
   drawTextAutoFit(ctx, (data.skills || 'PYTHON, JAVA, FRONTEND').toUpperCase(), infoX + 42, stat2Y + 20, maxInfoWidth - 45, 16, '"Syne", sans-serif', '900', '#e11d48');
 
-  // Icon 2 (Code)
   ctx.fillStyle = '#ffc700';
   ctx.beginPath();
   ctx.arc(infoX + 16, stat2Y + 10, 16, 0, Math.PI * 2);
@@ -707,7 +931,6 @@ export async function renderFormatBBadge(
   ctx.textAlign = 'center';
   ctx.fillText('💻', infoX + 16, stat2Y + 16);
 
-  // Stat 3: TEAM VIBES
   const stat3Y = stat2Y + 54;
   ctx.fillStyle = '#044f37';
   ctx.font = '800 12px "Syne", sans-serif';
@@ -716,7 +939,6 @@ export async function renderFormatBBadge(
 
   drawTextAutoFit(ctx, (data.teamVibes || 'BUILD • SHIP • REPEAT').toUpperCase(), infoX + 42, stat3Y + 20, maxInfoWidth - 45, 16, '"Syne", sans-serif', '900', '#044f37');
 
-  // Icon 3 (Envelope/Flame)
   ctx.fillStyle = '#ffc700';
   ctx.beginPath();
   ctx.arc(infoX + 16, stat3Y + 10, 16, 0, Math.PI * 2);
@@ -728,147 +950,129 @@ export async function renderFormatBBadge(
 
   ctx.restore();
 
-  // ----------------------------------------------------
   // LOWER SECTION: SIGNBOARD + BUILDER ID BOX + QR CODE
-  // ----------------------------------------------------
-  const lowerY = cardY + 665;
+  const lowerY = cardY + 655;
 
   // Left Signboard (Build / Ship / Repeat)
   ctx.save();
   const signX = cardX + 35;
 
-  // Wooden Post
   ctx.fillStyle = '#a16207';
-  ctx.fillRect(signX + 62, lowerY + 15, 16, 210);
+  ctx.fillRect(signX + 62, lowerY + 15, 16, 175);
 
-  // Arrow 1: BUILD
-  drawRoundedRect(ctx, signX + 12, lowerY + 25, 115, 40, 8);
+  drawRoundedRect(ctx, signX + 12, lowerY + 22, 115, 38, 8);
   ctx.fillStyle = '#ffc700';
   ctx.fill();
   ctx.strokeStyle = '#044f37';
   ctx.lineWidth = 2.5;
   ctx.stroke();
   ctx.fillStyle = '#044f37';
-  ctx.font = '900 19px "Syne", sans-serif';
+  ctx.font = '900 18px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('BUILD', signX + 70, lowerY + 51);
+  ctx.fillText('BUILD', signX + 70, lowerY + 47);
 
-  // Arrow 2: SHIP
-  drawRoundedRect(ctx, signX + 16, lowerY + 78, 115, 40, 8);
+  drawRoundedRect(ctx, signX + 16, lowerY + 70, 115, 38, 8);
   ctx.fillStyle = '#e11d48';
   ctx.fill();
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 2.5;
   ctx.stroke();
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 19px "Syne", sans-serif';
-  ctx.fillText('SHIP', signX + 74, lowerY + 104);
+  ctx.font = '900 18px "Syne", sans-serif';
+  ctx.fillText('SHIP', signX + 74, lowerY + 95);
 
-  // Arrow 3: REPEAT
-  drawRoundedRect(ctx, signX + 20, lowerY + 131, 115, 40, 8);
+  drawRoundedRect(ctx, signX + 20, lowerY + 118, 115, 38, 8);
   ctx.fillStyle = '#044f37';
   ctx.fill();
   ctx.strokeStyle = '#ffc700';
   ctx.lineWidth = 2.5;
   ctx.stroke();
   ctx.fillStyle = '#ffc700';
-  ctx.font = '900 19px "Syne", sans-serif';
-  ctx.fillText('REPEAT', signX + 78, lowerY + 157);
+  ctx.font = '900 18px "Syne", sans-serif';
+  ctx.fillText('REPEAT', signX + 78, lowerY + 143);
   ctx.restore();
 
   // Center Box: Builder ID, Venue, Date
   ctx.save();
   const boxX = cardX + 185;
-  const boxY = lowerY + 30;
-  drawRoundedRect(ctx, boxX, boxY, 225, 160, 16);
+  const boxY = lowerY + 22;
+  drawRoundedRect(ctx, boxX, boxY, 225, 150, 16);
   ctx.fillStyle = 'rgba(4, 79, 55, 0.05)';
   ctx.fill();
   ctx.strokeStyle = '#044f37';
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Header Pill
-  drawRoundedRect(ctx, boxX + 15, boxY + 10, 195, 32, 10);
+  drawRoundedRect(ctx, boxX + 15, boxY + 10, 195, 30, 10);
   ctx.fillStyle = '#044f37';
   ctx.fill();
 
   ctx.fillStyle = '#ffffff';
   ctx.font = '800 13px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('BUILDER ID', boxX + 112, boxY + 31);
+  ctx.fillText('BUILDER ID', boxX + 112, boxY + 30);
 
-  // ID Code Number
   ctx.fillStyle = '#044f37';
-  ctx.font = '900 27px "Space Grotesk", monospace';
-  ctx.fillText(data.builderId || '#HH26-9827', boxX + 112, boxY + 80);
+  ctx.font = '900 26px "Space Grotesk", monospace';
+  ctx.fillText(data.builderId || '#HH26-9827', boxX + 112, boxY + 76);
 
-  // Venue & Date
   ctx.fillStyle = '#e11d48';
-  ctx.font = '800 13px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(`VENUE: ${data.venue || 'GOA, INDIA'}`, boxX + 112, boxY + 112);
+  ctx.font = '800 12px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`VENUE: ${data.venue || 'GOA, INDIA'}`, boxX + 112, boxY + 106);
 
   ctx.fillStyle = '#044f37';
-  ctx.font = '800 13px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText(`DATE: ${data.date || '28 - 31 OCT 2026'}`, boxX + 112, boxY + 135);
+  ctx.font = '800 12px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText(`DATE: ${data.date || '28 - 31 OCT 2026'}`, boxX + 112, boxY + 128);
   ctx.restore();
 
   // Right Box: QR Code
   ctx.save();
   const qrX = cardX + 435;
-  const qrY = lowerY + 30;
+  const qrY = lowerY + 22;
 
   try {
     const qrDataUrl = await QRCode.toDataURL(`https://hhgoa2026.vercel.app/id/${data.builderId || 'HH26'}`, {
       margin: 1,
-      width: 145,
+      width: 140,
       color: {
         dark: '#044f37',
         light: '#fcf8e3',
       },
     });
     const qrImg = await loadImage(qrDataUrl);
-    ctx.drawImage(qrImg, qrX + 25, qrY + 10, 145, 145);
+    ctx.drawImage(qrImg, qrX + 25, qrY + 8, 140, 140);
 
-    // Center Palm Icon inside QR Code
     ctx.fillStyle = '#e11d48';
-    drawRoundedRect(ctx, qrX + 82, qrY + 68, 30, 30, 6);
+    drawRoundedRect(ctx, qrX + 80, qrY + 63, 30, 30, 6);
     ctx.fill();
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🌴', qrX + 97, qrY + 90);
+    ctx.fillText('🌴', qrX + 95, qrY + 85);
   } catch (e) {
     console.error('QR generation error:', e);
   }
 
   ctx.fillStyle = '#e11d48';
-  ctx.font = '800 12px "Syne", sans-serif';
+  ctx.font = '800 11px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✦ SCAN TO EXPLORE ✦', qrX + 97, qrY + 175);
+  ctx.fillText('✦ SCAN TO EXPLORE ✦', qrX + 95, qrY + 164);
   ctx.restore();
 
   // ----------------------------------------------------
-  // BOTTOM TROPICAL BEACH ART & #FRAMEINGOA BANNER
+  // BOTTOM ILLUSTRATION AREA (COMBINATION OF IMAGE 2 & IMAGE 3)
+  // Fills the lower empty space with Goan Villa + Sunset Beach + Hackers Coding at Outdoor Wooden Table!
   // ----------------------------------------------------
+  const illusX = cardX + 15;
+  const illusY = lowerY + 182;
+  const illusW = cardW - 30;
+  const illusH = 225;
+
+  drawGoanHackerBeachIllustration(ctx, illusX, illusY, illusW, illusH);
+
+  // Bottom Red/Pink #FRAMEINGOA Banner
   ctx.save();
-  const botY = cardY + cardH - 125;
-
-  // Ocean Water & Setting Sun Artwork at Bottom
-  ctx.fillStyle = '#ffc700';
-  ctx.beginPath();
-  ctx.arc(width / 2 - 50, botY + 45, 38, Math.PI, 0);
-  ctx.fill();
-
-  ctx.font = '40px sans-serif';
-  ctx.fillText('🏄‍♂️', cardX + 35, botY + 35);
-  ctx.fillText('🛵', cardX + cardW - 75, botY + 35);
-  ctx.fillText('🌴', cardX + 85, botY + 25);
-  ctx.fillText('🌴', cardX + cardW - 130, botY + 25);
-  ctx.restore();
-
-  // Red/Pink #FRAMEINGOA Banner
-  ctx.save();
-  drawRoundedRect(ctx, cardX + 110, cardY + cardH - 70, cardW - 220, 50, 16);
+  drawRoundedRect(ctx, cardX + 110, cardY + cardH - 62, cardW - 220, 48, 16);
   ctx.fillStyle = '#e11d48';
   ctx.fill();
   ctx.strokeStyle = '#ffc700';
@@ -876,9 +1080,9 @@ export async function renderFormatBBadge(
   ctx.stroke();
 
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 24px "Syne", sans-serif';
+  ctx.font = '900 22px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✦ #FRAMEINGOA ✦', width / 2, cardY + cardH - 38);
+  ctx.fillText('✦ #FRAMEINGOA ✦', width / 2, cardY + cardH - 31);
   ctx.restore();
 }
 
@@ -969,7 +1173,6 @@ export async function renderFormatCSquad(
       ctx.fillText('NO PHOTO', cx, cy);
     }
 
-    // Name & Role (Auto-fitted)
     drawTextAutoFit(ctx, (tm?.name || `MEMBER ${i + 1}`).toUpperCase(), cx, cardY + 340, cardW - 30, count <= 2 ? 28 : 22, '"Syne", sans-serif', '900', '#044f37', 'center');
     drawTextAutoFit(ctx, (tm?.role || 'BUILDER').toUpperCase(), cx, cardY + 375, cardW - 30, count <= 2 ? 18 : 14, '"Plus Jakarta Sans", sans-serif', '800', '#e11d48', 'center');
 
