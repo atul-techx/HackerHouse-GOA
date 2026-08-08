@@ -1140,7 +1140,7 @@ export async function renderFormatCSquad(
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  const width = 1200;
+  const width = 1350;
   const height = 900;
   canvas.width = width;
   canvas.height = height;
@@ -1168,8 +1168,8 @@ export async function renderFormatCSquad(
     { x: width - 60, y: 500, s: 9, c: '#ffc700' },
     { x: 100, y: 820, s: 11, c: '#ffc700' },
     { x: width - 100, y: 820, s: 11, c: '#ff1e79' },
-    { x: width / 2 - 420, y: 140, s: 8, c: '#ffc700' },
-    { x: width / 2 + 420, y: 140, s: 8, c: '#ff1e79' },
+    { x: width / 2 - 440, y: 140, s: 8, c: '#ffc700' },
+    { x: width / 2 + 440, y: 140, s: 8, c: '#ff1e79' },
   ];
   for (const st of squadStars) {
     drawSparkleStar(ctx, st.x, st.y, st.s, st.c);
@@ -1177,8 +1177,8 @@ export async function renderFormatCSquad(
 
   // 3. Top Hanging Ribbon Header ("GOA HACKER SQUAD")
   ctx.save();
-  const headerW = 780;
-  const headerH = 100;
+  const headerW = 820;
+  const headerH = 96;
   const headerX = (width - headerW) / 2;
   const headerY = 32;
 
@@ -1189,7 +1189,11 @@ export async function renderFormatCSquad(
   drawRoundedRect(ctx, headerX, headerY, headerW, headerH, 22);
   ctx.fillStyle = '#e11d48';
   ctx.fill();
+  
+  // RESET SHADOW FOR TEXT
+  ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
 
   // Ribbon Gold Border
   ctx.strokeStyle = '#ffc700';
@@ -1206,61 +1210,66 @@ export async function renderFormatCSquad(
 
   // Title Text
   ctx.fillStyle = '#ffffff';
-  ctx.font = '900 38px "Syne", sans-serif';
+  ctx.font = '900 34px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText(`🌴 ${(teamName || 'GOA HACKER SQUAD').toUpperCase()} 🌴`, width / 2, headerY + 52);
+  ctx.textBaseline = 'middle';
+  ctx.fillText(`🌴 ${(teamName || 'GOA HACKER SQUAD').toUpperCase()} 🌴`, width / 2, headerY + 42);
 
   ctx.fillStyle = '#ffc700';
-  ctx.font = '800 16px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText('✦ BUILD IN GOA, SHIP FROM PARADISE • OFFICIAL BUILDER SQUAD ✦', width / 2, headerY + 82);
+  ctx.font = '800 14px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('✦ BUILD IN GOA, SHIP FROM PARADISE • OFFICIAL BUILDER SQUAD ✦', width / 2, headerY + 74);
   ctx.restore();
 
-  // 4. TEAMMATES CARDS (SUPPORT UP TO 5 MEMBERS PERFECTLY!)
+  // 4. TEAMMATES CARDS (SUPPORT UP TO 5 MEMBERS WITH PERFECT 1350PX CANVAS LAYOUT!)
   const count = Math.min(Math.max(teammates.length, 1), 5);
   
   // Dynamic sizing based on count
-  let cardW = 202;
-  let spacing = 16;
-  let avatarRadius = 72;
+  let cardW = 220;
+  let spacing = 20;
+  let avatarRadius = 74;
   
   if (count <= 2) {
-    cardW = 440;
+    cardW = 460;
     spacing = 60;
     avatarRadius = 115;
   } else if (count === 3) {
-    cardW = 320;
+    cardW = 340;
     spacing = 40;
     avatarRadius = 95;
   } else if (count === 4) {
-    cardW = 245;
+    cardW = 265;
     spacing = 24;
-    avatarRadius = 82;
+    avatarRadius = 84;
   } else {
     // count === 5
-    cardW = 202;
-    spacing = 16;
+    cardW = 220;
+    spacing = 20;
     avatarRadius = 72;
   }
 
   const totalW = count * cardW + (count - 1) * spacing;
   const startX = (width - totalW) / 2;
-  const cardY = 162;
-  const cardH = 555;
+  const cardY = 168;
+  const cardH = 520;
 
   for (let i = 0; i < count; i++) {
     const tm = teammates[i];
     const cx = startX + i * (cardW + spacing) + cardW / 2;
-    const cy = cardY + 160;
+    const cy = cardY + 145;
 
     ctx.save();
-    // Card Base
+    // Card Shadow
     ctx.shadowColor = 'rgba(0,0,0,0.4)';
     ctx.shadowBlur = 15;
     ctx.shadowOffsetY = 6;
     drawRoundedRect(ctx, cx - cardW / 2, cardY, cardW, cardH, 22);
     ctx.fillStyle = '#fcf8e3';
     ctx.fill();
+
+    // RESET SHADOW FOR INNER ELEMENTS
+    ctx.shadowColor = 'transparent';
     ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
 
     // Card Outer Double Stitched Border
     ctx.strokeStyle = '#044f37';
@@ -1273,24 +1282,25 @@ export async function renderFormatCSquad(
     ctx.stroke();
 
     // Top Hanging Ribbon Badge for Member #
-    ctx.save();
-    drawRoundedRect(ctx, cx - 65, cardY + 14, 130, 30, 8);
+    const badgeW = 104;
+    const badgeH = 26;
+    drawRoundedRect(ctx, cx - badgeW / 2, cardY + 12, badgeW, badgeH, 7);
     ctx.fillStyle = '#044f37';
     ctx.fill();
     ctx.fillStyle = '#ffc700';
-    ctx.font = '800 13px "Syne", sans-serif';
+    ctx.font = '800 12px "Syne", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`BUILDER #${i + 1}`, cx, cardY + 34);
-    ctx.restore();
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`BUILDER #${i + 1}`, cx, cardY + 12 + badgeH / 2);
 
     // Photo Avatar Circle Rings
     ctx.beginPath();
-    ctx.arc(cx, cy, avatarRadius + 8, 0, Math.PI * 2);
+    ctx.arc(cx, cy, avatarRadius + 7, 0, Math.PI * 2);
     ctx.fillStyle = '#e11d48';
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(cx, cy, avatarRadius + 4, 0, Math.PI * 2);
+    ctx.arc(cx, cy, avatarRadius + 3.5, 0, Math.PI * 2);
     ctx.fillStyle = '#ffc700';
     ctx.fill();
 
@@ -1298,7 +1308,7 @@ export async function renderFormatCSquad(
     ctx.lineWidth = 2;
     ctx.setLineDash([6, 6]);
     ctx.beginPath();
-    ctx.arc(cx, cy, avatarRadius + 2, 0, Math.PI * 2);
+    ctx.arc(cx, cy, avatarRadius + 1.5, 0, Math.PI * 2);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -1318,14 +1328,15 @@ export async function renderFormatCSquad(
       ctx.arc(cx, cy, avatarRadius, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#ffc700';
-      ctx.font = '700 16px sans-serif';
+      ctx.font = '700 15px sans-serif';
       ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
       ctx.fillText('NO PHOTO', cx, cy);
     }
 
     // Teammate Name & Role
-    const nameY = cardY + avatarRadius * 2 + 75;
-    const roleY = nameY + 34;
+    const nameY = cy + avatarRadius + 35;
+    const roleY = nameY + 36;
 
     const nameText = (tm?.name || `TEAMMATE ${i + 1}`).toUpperCase();
     const roleText = (tm?.role || 'DEVELOPER').toUpperCase();
@@ -1335,8 +1346,8 @@ export async function renderFormatCSquad(
       nameText,
       cx,
       nameY,
-      cardW - 20,
-      count <= 2 ? 30 : count === 3 ? 24 : 20,
+      cardW - 24,
+      count <= 2 ? 28 : count === 3 ? 23 : 18,
       '"Syne", sans-serif',
       '900',
       '#044f37',
@@ -1344,18 +1355,23 @@ export async function renderFormatCSquad(
     );
 
     // Role Tag Pill
-    drawRoundedRect(ctx, cx - (cardW - 30) / 2, roleY - 16, cardW - 30, 26, 6);
+    const pillW = cardW - 32;
+    const pillH = 26;
+    drawRoundedRect(ctx, cx - pillW / 2, roleY - 13, pillW, pillH, 6);
     ctx.fillStyle = '#e11d48';
     ctx.fill();
+
     ctx.fillStyle = '#ffffff';
     ctx.font = '800 11px "Plus Jakarta Sans", sans-serif';
     ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
     ctx.fillText(`✦ ${roleText} ✦`, cx, roleY);
 
     // Bottom Decorative Class / Stack Tag
-    const tagY = cardH + cardY - 45;
+    const tagY = cardY + cardH - 35;
+    const tagW = cardW - 32;
     ctx.fillStyle = 'rgba(4, 79, 55, 0.08)';
-    drawRoundedRect(ctx, cx - (cardW - 30) / 2, tagY - 14, cardW - 30, 28, 6);
+    drawRoundedRect(ctx, cx - tagW / 2, tagY - 13, tagW, 26, 6);
     ctx.fill();
     ctx.strokeStyle = '#044f37';
     ctx.lineWidth = 1;
@@ -1364,21 +1380,30 @@ export async function renderFormatCSquad(
     ctx.fillStyle = '#044f37';
     ctx.font = '800 11px "Syne", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('💻 HACKER SQUAD', cx, tagY + 4);
+    ctx.textBaseline = 'middle';
+    ctx.fillText('💻 HACKER SQUAD', cx, tagY);
 
     ctx.restore();
   }
 
   // 5. Bottom Squad Banner
   ctx.save();
-  const footerBannerW = 680;
+  const footerBannerW = 720;
   const footerBannerH = 60;
   const footerBannerX = (width - footerBannerW) / 2;
   const footerBannerY = height - 95;
 
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 15;
+  ctx.shadowOffsetY = 6;
   drawRoundedRect(ctx, footerBannerX, footerBannerY, footerBannerW, footerBannerH, 18);
   ctx.fillStyle = '#e11d48';
   ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+
   ctx.strokeStyle = '#ffc700';
   ctx.lineWidth = 3.5;
   ctx.stroke();
@@ -1386,6 +1411,7 @@ export async function renderFormatCSquad(
   ctx.fillStyle = '#ffffff';
   ctx.font = '900 24px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✦ JOIN US AT #FRAMEINGOA • HH GOA 2026 ✦', width / 2, footerBannerY + 38);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('✦ JOIN US AT #FRAMEINGOA • HH GOA 2026 ✦', width / 2, footerBannerY + footerBannerH / 2);
   ctx.restore();
 }
