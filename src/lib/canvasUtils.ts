@@ -1015,14 +1015,14 @@ export async function renderFormatBBadge(
   ctx.fillText(`DATE: ${data.date || '28 - 31 OCT 2026'}`, boxX + 112, boxY + 128);
   ctx.restore();
 
-  // Right Box: EXACT USER CUSTOM QR CODE IMAGE (with Hacker House logo & Scan me! text)
+  // Right Box: EXACT USER CUSTOM QR CODE IMAGE (Shifted Right + Increased Size)
   ctx.save();
-  const qrX = cardX + 418;
-  const qrY = lowerY - 14;
+  const qrX = cardX + 432;
+  const qrY = lowerY - 22;
 
   try {
     const customQrImg = await loadImage(CUSTOM_QR_B64);
-    ctx.drawImage(customQrImg, qrX, qrY, 175, 195);
+    ctx.drawImage(customQrImg, qrX, qrY, 192, 212);
   } catch (e) {
     console.error('Failed loading custom QR image:', e);
   }
