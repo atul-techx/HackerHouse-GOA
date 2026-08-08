@@ -14,9 +14,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenGuide }) => {
         
         {/* Brand Logo & Name */}
         <div className="flex items-center gap-3">
-          <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-goa-pink to-goa-gold p-0.5 shadow-lg shadow-goa-pink/20">
-            <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-goa-dark">
-              <Palmtree className="h-6 w-6 text-goa-gold animate-pulse" />
+          <div className="relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-goa-pink via-goa-gold to-emerald-400 p-0.5 shadow-lg shadow-goa-pink/30 hover:scale-105 transition">
+            <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-[#044f37] overflow-hidden p-0.5">
+              <img src="/logo.png" alt="Hacker House Goa Logo" className="h-full w-full object-contain rounded-[8px]" />
             </div>
           </div>
           <div>

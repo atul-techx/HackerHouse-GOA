@@ -6,6 +6,11 @@ export const metadata: Metadata = {
   title: 'HH Goa 2026 — Frame & Builder ID Generator (#FrameInGoa)',
   description: 'Instantly generate your official HH Goa 2026 profile picture frame and Builder ID badge. Build in Goa, ship from paradise!',
   keywords: ['HH Goa 2026', 'FrameInGoa', 'Hacker House Goa', 'Builder ID Generator', 'PFP Frame', 'Goa Hackathon'],
+  icons: {
+    icon: '/logo.png',
+    shortcut: '/favicon.ico',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'HH Goa 2026 — Frame & Builder ID Generator',
     description: 'Create your official HH Goa 2026 Builder ID badge and PFP frame in seconds!',
@@ -38,6 +43,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
