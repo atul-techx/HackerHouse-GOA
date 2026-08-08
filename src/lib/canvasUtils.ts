@@ -611,7 +611,7 @@ export async function renderFormatAPFP(
 }
 
 // ----------------------------------------------------
-// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT SVG EMBEDDED LOGO IMAGE)
+// FORMAT B: BUILDER ID BADGE CANVAS RENDERER
 // ----------------------------------------------------
 export async function renderFormatBBadge(
   canvas: HTMLCanvasElement,
@@ -739,9 +739,7 @@ export async function renderFormatBBadge(
   }
   ctx.restore();
 
-  // ----------------------------------------------------
   // RIGHT TOP CIRCULAR POSTMARK SEAL (EXACT IMAGE EMBEDDED LOGO)
-  // ----------------------------------------------------
   ctx.save();
   const sealX = cardX + cardW - 88;
   const sealY = cardY + 112;
@@ -1017,38 +1015,39 @@ export async function renderFormatBBadge(
   ctx.fillText(`DATE: ${data.date || '28 - 31 OCT 2026'}`, boxX + 112, boxY + 128);
   ctx.restore();
 
-  // Right Box: QR Code
+  // Right Box: QR Code (SHIFTED UP & RESIZED TO GIVING CLEAR VISIBILITY FOR RED TEXT)
   ctx.save();
   const qrX = cardX + 435;
-  const qrY = lowerY + 22;
+  const qrY = lowerY + 6; // Shifted UP for clear visibility
 
   try {
     const qrDataUrl = await QRCode.toDataURL(`https://hhgoa2026.vercel.app/id/${data.builderId || 'HH26'}`, {
       margin: 1,
-      width: 140,
+      width: 125,
       color: {
         dark: '#044f37',
         light: '#fcf8e3',
       },
     });
     const qrImg = await loadImage(qrDataUrl);
-    ctx.drawImage(qrImg, qrX + 25, qrY + 8, 140, 140);
+    ctx.drawImage(qrImg, qrX + 32, qrY + 8, 125, 125);
 
     ctx.fillStyle = '#e11d48';
-    drawRoundedRect(ctx, qrX + 80, qrY + 63, 30, 30, 6);
+    drawRoundedRect(ctx, qrX + 80, qrY + 56, 28, 28, 6);
     ctx.fill();
     ctx.fillStyle = '#ffffff';
-    ctx.font = '16px sans-serif';
+    ctx.font = '15px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🌴', qrX + 95, qrY + 85);
+    ctx.fillText('🌴', qrX + 94, qrY + 76);
   } catch (e) {
     console.error('QR generation error:', e);
   }
 
+  // Red Text Label Underneath QR Code (Fully Visible Above Bottom Illustration!)
   ctx.fillStyle = '#e11d48';
-  ctx.font = '800 11px "Syne", sans-serif';
+  ctx.font = '800 12px "Syne", sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('✦ SCAN TO EXPLORE ✦', qrX + 95, qrY + 164);
+  ctx.fillText('✦ SCAN TO EXPLORE ✦', qrX + 95, qrY + 152);
   ctx.restore();
 
   // BOTTOM ILLUSTRATION AREA (COMBINATION OF IMAGE 2 & IMAGE 3)
