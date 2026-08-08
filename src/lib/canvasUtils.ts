@@ -177,9 +177,43 @@ export function downloadCanvasAsPNG(canvas: HTMLCanvasElement, fileName: string)
 }
 
 /**
+ * CURVED ARC TEXT HELPER (For Top & Bottom of Circular Seals)
+ */
+function drawCurvedArcText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+  inside: boolean = false,
+  color: string = '#044f37',
+  fontSize: number = 10
+) {
+  ctx.save();
+  ctx.font = `900 ${fontSize}px "Syne", "Space Grotesk", sans-serif`;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const len = text.length;
+  const step = len > 1 ? (endAngle - startAngle) / (len - 1) : 0;
+
+  for (let i = 0; i < len; i++) {
+    const angle = startAngle + i * step;
+    ctx.save();
+    ctx.rotate(angle);
+    ctx.translate(0, inside ? radius : -radius);
+    if (inside) {
+      ctx.rotate(Math.PI);
+    }
+    ctx.fillText(text[i], 0, 0);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/**
  * COMBINATION ILLUSTRATION: GOAN HACKER VILLA + TROPICAL SUNSET BEACH
- * Combines Image 2 (5 hackers at outdoor wooden table under Goan villa)
- * and Image 3 (Sunset sun, ocean, palm trees, surfboards & shacks)
  */
 function drawGoanHackerBeachIllustration(
   ctx: CanvasRenderingContext2D,
@@ -248,13 +282,12 @@ function drawGoanHackerBeachIllustration(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // 4. LEFT SIDE: GOAN HACKER VILLA (from Image 2)
+  // 4. LEFT SIDE: GOAN HACKER VILLA
   const villaX = x + 15;
   const villaY = y + 45;
   const villaW = 160;
   const villaH = 110;
 
-  // Red Tiled Roof
   drawRoundedRect(ctx, villaX - 5, villaY - 12, villaW + 10, 18, 4);
   ctx.fillStyle = '#e11d48';
   ctx.fill();
@@ -262,14 +295,12 @@ function drawGoanHackerBeachIllustration(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Villa White Wall
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(villaX, villaY, villaW, villaH);
   ctx.strokeStyle = '#044f37';
   ctx.lineWidth = 2;
   ctx.strokeRect(villaX, villaY, villaW, villaH);
 
-  // Green Window Shutters with Pink Slats
   for (let w = 0; w < 3; w++) {
     const wx = villaX + 15 + w * 48;
     const wy = villaY + 20;
@@ -280,13 +311,11 @@ function drawGoanHackerBeachIllustration(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Inner Pink Shutters
     ctx.fillStyle = '#ff1e79';
     ctx.fillRect(wx + 4, wy + 4, 12, 47);
     ctx.fillRect(wx + 18, wy + 4, 12, 47);
   }
 
-  // Pink Bougainvillea Flower Vine on Left Wall
   ctx.fillStyle = '#ff1e79';
   for (let f = 0; f < 8; f++) {
     ctx.beginPath();
@@ -294,13 +323,12 @@ function drawGoanHackerBeachIllustration(
     ctx.fill();
   }
 
-  // 5. RIGHT SIDE: GOA BEACH SHACK & SURFBOARDS (from Image 3)
+  // 5. RIGHT SIDE: GOA BEACH SHACK & SURFBOARDS
   const shackX = x + width - 175;
   const shackY = y + 55;
   const shackW = 155;
   const shackH = 100;
 
-  // Shack Base & Roof
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(shackX, shackY, shackW, shackH);
   ctx.strokeStyle = '#044f37';
@@ -311,7 +339,6 @@ function drawGoanHackerBeachIllustration(
   ctx.fillStyle = '#044f37';
   ctx.fill();
 
-  // "GOA BEACH" Sign Board
   drawRoundedRect(ctx, shackX + 25, shackY + 10, 105, 24, 6);
   ctx.fillStyle = '#ff1e79';
   ctx.fill();
@@ -320,8 +347,6 @@ function drawGoanHackerBeachIllustration(
   ctx.textAlign = 'center';
   ctx.fillText('GOA BEACH', shackX + 77, shackY + 26);
 
-  // Propped Up Surfboards (Yellow & Pink)
-  // Surfboard 1 (Yellow)
   ctx.save();
   ctx.translate(shackX - 18, shackY + 30);
   ctx.rotate((-12 * Math.PI) / 180);
@@ -334,7 +359,6 @@ function drawGoanHackerBeachIllustration(
   ctx.stroke();
   ctx.restore();
 
-  // Surfboard 2 (Pink)
   ctx.save();
   ctx.translate(shackX - 6, shackY + 30);
   ctx.rotate((-5 * Math.PI) / 180);
@@ -347,13 +371,12 @@ function drawGoanHackerBeachIllustration(
   ctx.stroke();
   ctx.restore();
 
-  // 6. CENTER BOTTOM: 5 HACKERS CODING AT OUTDOOR TABLE (from Image 2)
+  // 6. CENTER BOTTOM: 5 HACKERS CODING AT OUTDOOR TABLE
   const tableX = x + 165;
   const tableY = y + height - 55;
   const tableW = 410;
   const tableH = 14;
 
-  // Wooden Long Table
   drawRoundedRect(ctx, tableX, tableY, tableW, tableH, 4);
   ctx.fillStyle = '#a16207';
   ctx.fill();
@@ -361,21 +384,18 @@ function drawGoanHackerBeachIllustration(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // Table Legs
   for (let leg = 0; leg < 4; leg++) {
     const lx = tableX + 30 + leg * 110;
     ctx.fillStyle = '#78350f';
     ctx.fillRect(lx, tableY + tableH, 10, 35);
   }
 
-  // 5 Developers with Laptops (Green, Yellow, Pink, White shirts)
   const shirtColors = ['#044f37', '#ffc700', '#ff1e79', '#ffffff', '#044f37'];
 
   for (let d = 0; d < 5; d++) {
     const dx = tableX + 35 + d * 82;
     const dy = tableY - 42;
 
-    // Head
     ctx.fillStyle = '#fbcfe8';
     ctx.beginPath();
     ctx.arc(dx, dy + 10, 13, 0, Math.PI * 2);
@@ -384,14 +404,12 @@ function drawGoanHackerBeachIllustration(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Eyes & Smile
     ctx.fillStyle = '#044f37';
     ctx.beginPath();
     ctx.arc(dx - 4, dy + 8, 2, 0, Math.PI * 2);
     ctx.arc(dx + 4, dy + 8, 2, 0, Math.PI * 2);
     ctx.fill();
 
-    // Shirt Body
     ctx.fillStyle = shirtColors[d];
     drawRoundedRect(ctx, dx - 18, dy + 24, 36, 22, 6);
     ctx.fill();
@@ -399,7 +417,6 @@ function drawGoanHackerBeachIllustration(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Laptop (Open Lid)
     ctx.fillStyle = '#023524';
     drawRoundedRect(ctx, dx - 16, dy + 28, 32, 16, 3);
     ctx.fill();
@@ -407,11 +424,9 @@ function drawGoanHackerBeachIllustration(
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Laptop Glowing Screen Accent
     ctx.fillStyle = d % 2 === 0 ? '#10b981' : '#ff1e79';
     ctx.fillRect(dx - 12, dy + 31, 24, 10);
 
-    // Coffee Cup / Drinks on Table
     ctx.fillStyle = '#ffffff';
     drawRoundedRect(ctx, dx + 20, tableY - 14, 8, 12, 2);
     ctx.fill();
@@ -421,14 +436,12 @@ function drawGoanHackerBeachIllustration(
   }
 
   // 7. TALL TROPICAL PALM TREES ON BOTH SIDES
-  // Left Palm Tree 🌴
   ctx.save();
   ctx.font = '65px sans-serif';
   ctx.fillText('🌴', x + 5, y + 105);
   ctx.fillText('🌴', x + width - 75, y + 105);
   ctx.restore();
 
-  // Pink Scooter 🛵 on Right
   ctx.save();
   ctx.font = '36px sans-serif';
   ctx.fillText('🛵', x + width - 110, y + height - 25);
@@ -606,7 +619,7 @@ export async function renderFormatAPFP(
 }
 
 // ----------------------------------------------------
-// FORMAT B: BUILDER ID BADGE CANVAS RENDERER
+// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT IMAGE 2 CIRCULAR SEAL MATCH)
 // ----------------------------------------------------
 export async function renderFormatBBadge(
   canvas: HTMLCanvasElement,
@@ -669,7 +682,10 @@ export async function renderFormatBBadge(
   ctx.stroke();
   ctx.restore();
 
-  // TOP BAR: STAMP (LEFT), TAB (CENTER), SEAL (RIGHT)
+  // ----------------------------------------------------
+  // TOP BAR: STAMP (LEFT), TAB (CENTER), CIRCULAR SEAL (RIGHT)
+  // ----------------------------------------------------
+
   // Center Top Hanging Tab Ribbon ("HH GOA 2026")
   ctx.save();
   drawRoundedRect(ctx, width / 2 - 70, cardY + 38, 140, 100, 16);
@@ -734,32 +750,48 @@ export async function renderFormatBBadge(
   }
   ctx.restore();
 
-  // Right Top Circular Postmark Seal
+  // ----------------------------------------------------
+  // RIGHT TOP CIRCULAR POSTMARK SEAL (EXACT MATCH FOR USER'S REFERENCE IMAGE 2!)
+  // ----------------------------------------------------
   ctx.save();
   const sealX = cardX + cardW - 85;
   const sealY = cardY + 110;
   ctx.translate(sealX, sealY);
 
+  // Outer solid green circle ring
   ctx.beginPath();
-  ctx.arc(0, 0, 48, 0, Math.PI * 2);
+  ctx.arc(0, 0, 52, 0, Math.PI * 2);
   ctx.strokeStyle = '#044f37';
   ctx.lineWidth = 2.5;
   ctx.stroke();
 
+  // Inner dashed green circle ring
   ctx.beginPath();
-  ctx.arc(0, 0, 44, 0, Math.PI * 2);
+  ctx.arc(0, 0, 46, 0, Math.PI * 2);
   ctx.strokeStyle = '#044f37';
   ctx.lineWidth = 1.5;
-  ctx.setLineDash([3, 3]);
+  ctx.setLineDash([4, 4]);
   ctx.stroke();
   ctx.setLineDash([]);
 
-  ctx.fillStyle = '#044f37';
-  ctx.font = '800 9px "Syne", sans-serif';
+  // Prominent Palm Tree Icon in Center 🌴
+  ctx.font = '36px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('BUILD IN GOA', 0, -22);
-  ctx.fillText('🌴', 0, 4);
-  ctx.fillText('SHIP FROM PARADISE', 0, 26);
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🌴', 0, 2);
+
+  // Left '+' and Right '+' Plus symbols
+  ctx.fillStyle = '#044f37';
+  ctx.font = '900 16px "Syne", sans-serif';
+  ctx.fillText('+', -34, 2);
+  ctx.fillText('+', 34, 2);
+
+  // Top Arc Text: "BUILD IN GOA" (Curved along top arc)
+  drawCurvedArcText(ctx, 'BUILD IN GOA', 35, -Math.PI * 0.42, Math.PI * 0.42, false, '#044f37', 10);
+
+  // Bottom Arc Text: "SHIP FROM PARADISE" (Curved along bottom arc)
+  drawCurvedArcText(ctx, 'SHIP FROM PARADISE', 35, Math.PI * 0.72, Math.PI * 0.28, true, '#044f37', 9.5);
+
   ctx.restore();
 
   // Vertical Text on Left & Right Margins
@@ -1059,10 +1091,7 @@ export async function renderFormatBBadge(
   ctx.fillText('✦ SCAN TO EXPLORE ✦', qrX + 95, qrY + 164);
   ctx.restore();
 
-  // ----------------------------------------------------
   // BOTTOM ILLUSTRATION AREA (COMBINATION OF IMAGE 2 & IMAGE 3)
-  // Fills the lower empty space with Goan Villa + Sunset Beach + Hackers Coding at Outdoor Wooden Table!
-  // ----------------------------------------------------
   const illusX = cardX + 15;
   const illusY = lowerY + 182;
   const illusW = cardW - 30;
