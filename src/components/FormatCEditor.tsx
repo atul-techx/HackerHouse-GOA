@@ -21,7 +21,7 @@ export const FormatCEditor: React.FC<FormatCEditorProps> = ({
   const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
 
   const addTeammate = () => {
-    if (teammates.length >= 4) return;
+    if (teammates.length >= 5) return;
     const id = Date.now().toString();
     setTeammates([
       ...teammates,
@@ -74,9 +74,9 @@ export const FormatCEditor: React.FC<FormatCEditorProps> = ({
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-goa-gold flex items-center gap-1.5">
             <Users className="h-4 w-4 text-goa-pink" />
-            <span>2. Teammates ({teammates.length}/4)</span>
+            <span>2. Teammates ({teammates.length}/5)</span>
           </label>
-          {teammates.length < 4 && (
+          {teammates.length < 5 && (
             <button
               onClick={addTeammate}
               className="flex items-center gap-1 rounded-lg bg-goa-pink/20 px-2.5 py-1 text-xs font-bold text-goa-pink hover:bg-goa-pink hover:text-white transition"
