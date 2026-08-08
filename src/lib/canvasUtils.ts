@@ -1,4 +1,5 @@
 import { CUSTOM_QR_B64 } from './qrBase64';
+import { LOGO_GREEN_B64 } from './logoBase64';
 
 export interface PhotoTransform {
   zoom: number; // 0.5 to 3.0
@@ -751,25 +752,41 @@ export async function renderFormatBBadge(
     ctx.fill();
   }
 
-  // TOP BAR: STAMP (LEFT), TAB (CENTER), CIRCULAR SEAL (RIGHT)
-  // Center Top Hanging Tab Ribbon ("HH GOA 2026")
+  // TOP BAR: STAMP (LEFT), TAB (CENTER - OFFICIAL GREEN LOGO), CIRCULAR SEAL (RIGHT)
+  // Center Top Hanging Tab Ribbon (OFFICIAL GREEN HACKER HOUSE GOA LOGO)
   ctx.save();
-  drawRoundedRect(ctx, width / 2 - 70, cardY + 38, 140, 100, 16);
-  ctx.fillStyle = '#e11d48';
+  const tabW = 128;
+  const tabH = 116;
+  const tabX = width / 2 - tabW / 2;
+  const tabY = cardY + 28;
+
+  // Outer Tab Shadow & Container
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetY = 4;
+  drawRoundedRect(ctx, tabX, tabY, tabW, tabH, 18);
+  ctx.fillStyle = '#044f37';
   ctx.fill();
 
-  ctx.fillStyle = '#ffc700';
-  ctx.font = '800 26px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('🌴', width / 2, cardY + 68);
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
 
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '900 17px "Syne", sans-serif';
-  ctx.fillText('HH GOA', width / 2, cardY + 94);
+  ctx.strokeStyle = '#ffc700';
+  ctx.lineWidth = 3.5;
+  ctx.stroke();
 
-  ctx.fillStyle = '#ffc700';
-  ctx.font = '800 15px "Syne", sans-serif';
-  ctx.fillText('2026', width / 2, cardY + 116);
+  try {
+    const greenLogoImg = await loadImage(LOGO_GREEN_B64);
+    ctx.save();
+    ctx.beginPath();
+    drawRoundedRect(ctx, tabX + 5, tabY + 5, tabW - 10, tabH - 10, 14);
+    ctx.clip();
+    ctx.drawImage(greenLogoImg, tabX + 5, tabY + 5, tabW - 10, tabH - 10);
+    ctx.restore();
+  } catch (err) {
+    console.error('Failed rendering green logo:', err);
+  }
   ctx.restore();
 
   // Left Top Postage Stamp ("GOA INDIA")
