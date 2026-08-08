@@ -27,6 +27,44 @@ export interface Teammate {
   transform: PhotoTransform;
 }
 
+// Embedded SVG Data URL for the exact circular postmark seal logo
+const SEAL_LOGO_SVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <path id="topArcPath" d="M 30,100 A 70,70 0 0,1 170,100" />
+    <path id="bottomArcPath" d="M 28,105 A 72,72 0 0,0 172,105" />
+  </defs>
+
+  <!-- Outer Double Circle Border -->
+  <circle cx="100" cy="100" r="95" fill="none" stroke="#044f37" stroke-width="4.5"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#044f37" stroke-width="2"/>
+
+  <!-- Top Curved Arc Text: BUILD IN GOA -->
+  <text font-family="'Space Grotesk', 'Syne', sans-serif" font-weight="900" font-size="19" fill="#044f37" letter-spacing="2.5">
+    <textPath href="#topArcPath" startOffset="50%" text-anchor="middle">BUILD IN GOA</textPath>
+  </text>
+
+  <!-- Bottom Curved Arc Text: SHIP FROM PARADISE -->
+  <text font-family="'Space Grotesk', 'Syne', sans-serif" font-weight="900" font-size="17" fill="#044f37" letter-spacing="1.5">
+    <textPath href="#bottomArcPath" startOffset="50%" text-anchor="middle">SHIP FROM PARADISE</textPath>
+  </text>
+
+  <!-- Side Plus Marks -->
+  <text x="24" y="107" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="22" fill="#044f37" text-anchor="middle">+</text>
+  <text x="176" y="107" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="22" fill="#044f37" text-anchor="middle">+</text>
+
+  <!-- Center Palm Tree Vector Silhouette -->
+  <g fill="#044f37">
+    <path d="M 96,146 Q 98,110 95,74 L 105,74 Q 102,110 104,146 Z" />
+    <path d="M 96,74 Q 68,44 48,68 Q 68,54 96,74 Z" />
+    <path d="M 104,74 Q 132,44 152,68 Q 132,54 104,74 Z" />
+    <path d="M 96,74 Q 58,68 42,94 Q 66,78 96,74 Z" />
+    <path d="M 104,74 Q 142,68 158,94 Q 134,78 104,74 Z" />
+    <path d="M 100,74 Q 88,38 100,28 Q 112,38 100,74 Z" />
+  </g>
+</svg>
+`)}`;
+
 // Helper to draw rounded rectangle
 export function drawRoundedRect(
   ctx: CanvasRenderingContext2D,
@@ -177,85 +215,6 @@ export function downloadCanvasAsPNG(canvas: HTMLCanvasElement, fileName: string)
 }
 
 /**
- * VECTOR PALM TREE (For Center of Circular Postmark Seal)
- */
-function drawVectorPalmTree(ctx: CanvasRenderingContext2D, cx: number, cy: number, scale: number = 1.0) {
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.scale(scale, scale);
-
-  // Trunk
-  ctx.beginPath();
-  ctx.moveTo(-3.5, 22);
-  ctx.quadraticCurveTo(-1, 0, -2, -10);
-  ctx.lineTo(2.5, -10);
-  ctx.quadraticCurveTo(3.5, 0, 3.5, 22);
-  ctx.closePath();
-  ctx.fillStyle = '#044f37';
-  ctx.fill();
-
-  // Leaves / Fronds
-  const fronds = [
-    { startX: -2, startY: -10, cpX: -18, cpY: -30, endX: -26, endY: -16 },
-    { startX: 2, startY: -10, cpX: 18, cpY: -30, endX: 26, endY: -16 },
-    { startX: -2, startY: -10, cpX: -28, cpY: -18, endX: -32, endY: 2 },
-    { startX: 2, startY: -10, cpX: 28, cpY: -18, endX: 32, endY: 2 },
-    { startX: 0, startY: -10, cpX: -6, cpY: -36, endX: -4, endY: -38 },
-    { startX: 0, startY: -10, cpX: 6, cpY: -36, endX: 4, endY: -38 },
-  ];
-
-  ctx.strokeStyle = '#044f37';
-  ctx.lineWidth = 3;
-  ctx.lineCap = 'round';
-
-  for (const f of fronds) {
-    ctx.beginPath();
-    ctx.moveTo(f.startX, f.startY);
-    ctx.quadraticCurveTo(f.cpX, f.cpY, f.endX, f.endY);
-    ctx.stroke();
-  }
-
-  ctx.restore();
-}
-
-/**
- * CURVED ARC TEXT HELPER (For Top & Bottom of Circular Seal - Exact Image 2 Match)
- */
-function drawCurvedArcText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  radius: number,
-  startAngle: number,
-  endAngle: number,
-  isBottom: boolean = false,
-  color: string = '#044f37',
-  fontSize: number = 9.5
-) {
-  ctx.save();
-  ctx.font = `900 ${fontSize}px "Space Grotesk", "Syne", sans-serif`;
-  ctx.fillStyle = color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  const len = text.length;
-  const totalAngle = endAngle - startAngle;
-  const step = len > 1 ? totalAngle / (len - 1) : 0;
-
-  for (let i = 0; i < len; i++) {
-    const angle = startAngle + i * step;
-    ctx.save();
-    ctx.rotate(angle);
-    ctx.translate(0, isBottom ? radius : -radius);
-    if (isBottom) {
-      ctx.rotate(Math.PI);
-    }
-    ctx.fillText(text[i], 0, 0);
-    ctx.restore();
-  }
-  ctx.restore();
-}
-
-/**
  * COMBINATION ILLUSTRATION: GOAN HACKER VILLA + TROPICAL SUNSET BEACH
  */
 function drawGoanHackerBeachIllustration(
@@ -270,7 +229,6 @@ function drawGoanHackerBeachIllustration(
   drawRoundedRect(ctx, x, y, width, height, 16);
   ctx.clip();
 
-  // 1. Sunset Sky Background
   const skyGrad = ctx.createLinearGradient(x, y, x, y + height);
   skyGrad.addColorStop(0, '#044f37');
   skyGrad.addColorStop(0.4, '#067a57');
@@ -278,7 +236,6 @@ function drawGoanHackerBeachIllustration(
   ctx.fillStyle = skyGrad;
   ctx.fillRect(x, y, width, height);
 
-  // 2. Large Sun on Horizon
   const sunCX = x + width / 2;
   const sunCY = y + 70;
   ctx.fillStyle = '#ffc700';
@@ -286,7 +243,6 @@ function drawGoanHackerBeachIllustration(
   ctx.arc(sunCX, sunCY, 42, 0, Math.PI * 2);
   ctx.fill();
 
-  // Sunbeams
   ctx.strokeStyle = 'rgba(255, 199, 0, 0.4)';
   ctx.lineWidth = 2.5;
   for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 6) {
@@ -296,12 +252,10 @@ function drawGoanHackerBeachIllustration(
     ctx.stroke();
   }
 
-  // 3. Ocean Water & Shore
   const waterY = y + 75;
   ctx.fillStyle = '#044f37';
   ctx.fillRect(x, waterY, width, 45);
 
-  // White Wave Ripples
   ctx.strokeStyle = '#ffffff';
   ctx.lineWidth = 1.5;
   for (let i = 0; i < 4; i++) {
@@ -311,7 +265,6 @@ function drawGoanHackerBeachIllustration(
     ctx.stroke();
   }
 
-  // Sand Shore Line
   const sandY = waterY + 35;
   ctx.fillStyle = '#fffbea';
   ctx.beginPath();
@@ -325,7 +278,6 @@ function drawGoanHackerBeachIllustration(
   ctx.lineWidth = 2;
   ctx.stroke();
 
-  // 4. LEFT SIDE: GOAN HACKER VILLA
   const villaX = x + 15;
   const villaY = y + 45;
   const villaW = 160;
@@ -366,7 +318,6 @@ function drawGoanHackerBeachIllustration(
     ctx.fill();
   }
 
-  // 5. RIGHT SIDE: GOA BEACH SHACK & SURFBOARDS
   const shackX = x + width - 175;
   const shackY = y + 55;
   const shackW = 155;
@@ -414,7 +365,6 @@ function drawGoanHackerBeachIllustration(
   ctx.stroke();
   ctx.restore();
 
-  // 6. CENTER BOTTOM: 5 HACKERS CODING AT OUTDOOR TABLE
   const tableX = x + 165;
   const tableY = y + height - 55;
   const tableW = 410;
@@ -478,7 +428,6 @@ function drawGoanHackerBeachIllustration(
     ctx.stroke();
   }
 
-  // 7. TALL TROPICAL PALM TREES ON BOTH SIDES
   ctx.save();
   ctx.font = '65px sans-serif';
   ctx.fillText('🌴', x + 5, y + 105);
@@ -662,7 +611,7 @@ export async function renderFormatAPFP(
 }
 
 // ----------------------------------------------------
-// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT MATCH FOR IMAGE 2 SEAL)
+// FORMAT B: BUILDER ID BADGE CANVAS RENDERER (EXACT SVG EMBEDDED LOGO IMAGE)
 // ----------------------------------------------------
 export async function renderFormatBBadge(
   canvas: HTMLCanvasElement,
@@ -791,44 +740,18 @@ export async function renderFormatBBadge(
   ctx.restore();
 
   // ----------------------------------------------------
-  // RIGHT TOP CIRCULAR POSTMARK SEAL (100% EXACT MATCH FOR USER'S IMAGE 2!)
+  // RIGHT TOP CIRCULAR POSTMARK SEAL (EXACT IMAGE EMBEDDED LOGO)
   // ----------------------------------------------------
   ctx.save();
-  const sealX = cardX + cardW - 85;
-  const sealY = cardY + 110;
-  ctx.translate(sealX, sealY);
+  const sealX = cardX + cardW - 88;
+  const sealY = cardY + 112;
 
-  // Outer solid green circle ring
-  ctx.beginPath();
-  ctx.arc(0, 0, 52, 0, Math.PI * 2);
-  ctx.strokeStyle = '#044f37';
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  // Inner solid green circle ring (matching Image 2)
-  ctx.beginPath();
-  ctx.arc(0, 0, 48, 0, Math.PI * 2);
-  ctx.strokeStyle = '#044f37';
-  ctx.lineWidth = 1.2;
-  ctx.stroke();
-
-  // Vector Palm Tree in Center 🌴 (Vector path matching Image 2)
-  drawVectorPalmTree(ctx, 0, 0, 0.95);
-
-  // Left '+' and Right '+' Plus symbols (Matching Image 2)
-  ctx.fillStyle = '#044f37';
-  ctx.font = '900 15px "Space Grotesk", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('+', -35, 0);
-  ctx.fillText('+', 35, 0);
-
-  // Top Arc Text: "BUILD IN GOA" (Curved along top arc, reading upright left to right)
-  drawCurvedArcText(ctx, 'BUILD IN GOA', 35, -Math.PI * 0.38, Math.PI * 0.38, false, '#044f37', 9.5);
-
-  // Bottom Arc Text: "SHIP FROM PARADISE" (Curved along bottom arc, reading upright left to right)
-  drawCurvedArcText(ctx, 'SHIP FROM PARADISE', 35, Math.PI * 0.76, Math.PI * 0.24, true, '#044f37', 9);
-
+  try {
+    const sealImage = await loadImage(SEAL_LOGO_SVG);
+    ctx.drawImage(sealImage, sealX - 52, sealY - 52, 104, 104);
+  } catch (err) {
+    console.error('Failed rendering seal image:', err);
+  }
   ctx.restore();
 
   // Vertical Text on Left & Right Margins
