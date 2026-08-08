@@ -1,4 +1,4 @@
-import QRCode from 'qrcode';
+import { CUSTOM_QR_B64 } from './qrBase64';
 
 export interface PhotoTransform {
   zoom: number; // 0.5 to 3.0
@@ -940,7 +940,7 @@ export async function renderFormatBBadge(
 
   ctx.restore();
 
-  // LOWER SECTION: SIGNBOARD + BUILDER ID BOX + QR CODE
+  // LOWER SECTION: SIGNBOARD + BUILDER ID BOX + CUSTOM QR CODE IMAGE
   const lowerY = cardY + 655;
 
   // Left Signboard (Build / Ship / Repeat)
@@ -1015,39 +1015,17 @@ export async function renderFormatBBadge(
   ctx.fillText(`DATE: ${data.date || '28 - 31 OCT 2026'}`, boxX + 112, boxY + 128);
   ctx.restore();
 
-  // Right Box: QR Code (SHIFTED UP & RESIZED TO GIVING CLEAR VISIBILITY FOR RED TEXT)
+  // Right Box: EXACT USER CUSTOM QR CODE IMAGE (with Hacker House logo & Scan me! text)
   ctx.save();
-  const qrX = cardX + 435;
-  const qrY = lowerY + 6; // Shifted UP for clear visibility
+  const qrX = cardX + 418;
+  const qrY = lowerY - 14;
 
   try {
-    const qrDataUrl = await QRCode.toDataURL(`https://hhgoa2026.vercel.app/id/${data.builderId || 'HH26'}`, {
-      margin: 1,
-      width: 125,
-      color: {
-        dark: '#044f37',
-        light: '#fcf8e3',
-      },
-    });
-    const qrImg = await loadImage(qrDataUrl);
-    ctx.drawImage(qrImg, qrX + 32, qrY + 8, 125, 125);
-
-    ctx.fillStyle = '#e11d48';
-    drawRoundedRect(ctx, qrX + 80, qrY + 56, 28, 28, 6);
-    ctx.fill();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '15px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('🌴', qrX + 94, qrY + 76);
+    const customQrImg = await loadImage(CUSTOM_QR_B64);
+    ctx.drawImage(customQrImg, qrX, qrY, 175, 195);
   } catch (e) {
-    console.error('QR generation error:', e);
+    console.error('Failed loading custom QR image:', e);
   }
-
-  // Red Text Label Underneath QR Code (Fully Visible Above Bottom Illustration!)
-  ctx.fillStyle = '#e11d48';
-  ctx.font = '800 12px "Syne", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('✦ SCAN TO EXPLORE ✦', qrX + 95, qrY + 152);
   ctx.restore();
 
   // BOTTOM ILLUSTRATION AREA (COMBINATION OF IMAGE 2 & IMAGE 3)
