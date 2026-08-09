@@ -16,7 +16,7 @@ import { generateRandomBuilderID } from '@/lib/builderClasses';
 import { Share2, Download, Sparkles, Palmtree, Zap, CheckCircle2, Heart } from 'lucide-react';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<'A' | 'B' | 'C'>('B');
+  const [activeTab, setActiveTab] = useState<'A' | 'B' | 'C'>('A');
 
   // Photo & Canvas state
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);

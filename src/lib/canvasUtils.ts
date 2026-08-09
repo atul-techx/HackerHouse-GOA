@@ -113,6 +113,75 @@ export function drawSparkleStar(
 }
 
 /**
+ * PALM LEAF VECTOR SILHOUETTE HELPER
+ */
+export function drawPalmLeaf(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  scale: number,
+  rotationDeg: number,
+  color: string = '#ffc700',
+  opacity: number = 0.15
+) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate((rotationDeg * Math.PI) / 180);
+  ctx.scale(scale, scale);
+  ctx.globalAlpha = opacity;
+  ctx.fillStyle = color;
+
+  // Draw central stem
+  ctx.beginPath();
+  ctx.moveTo(-3, 70);
+  ctx.quadraticCurveTo(0, 0, 0, -70);
+  ctx.quadraticCurveTo(3, 0, 3, 70);
+  ctx.closePath();
+  ctx.fill();
+
+  // Draw fronds along stem
+  const fronds = [
+    { y: -55, angle: -45, len: 60, width: 12 },
+    { y: -55, angle: 45, len: 60, width: 12 },
+    { y: -30, angle: -60, len: 80, width: 15 },
+    { y: -30, angle: 60, len: 80, width: 15 },
+    { y: -5, angle: -70, len: 90, width: 16 },
+    { y: -5, angle: 70, len: 90, width: 16 },
+    { y: 20, angle: -80, len: 85, width: 15 },
+    { y: 20, angle: 80, len: 85, width: 15 },
+    { y: 45, angle: -90, len: 70, width: 13 },
+    { y: 45, angle: 90, len: 70, width: 13 },
+  ];
+
+  for (const f of fronds) {
+    ctx.save();
+    ctx.translate(0, f.y);
+    ctx.rotate((f.angle * Math.PI) / 180);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(f.len / 2, -f.width, f.len, 0);
+    ctx.quadraticCurveTo(f.len / 2, f.width / 3, 0, 0);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Top tip leaf
+  ctx.save();
+  ctx.translate(0, -70);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.quadraticCurveTo(-8, -25, 0, -50);
+  ctx.quadraticCurveTo(8, -25, 0, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+
+/**
  * AUTO FONT SCALING HELPER
  */
 export function drawTextAutoFit(
@@ -484,16 +553,77 @@ export async function renderFormatAPFP(
   canvas.width = size;
   canvas.height = size;
 
-  const bgGrad = ctx.createLinearGradient(0, 0, size, size);
-  bgGrad.addColorStop(0, '#011c14');
-  bgGrad.addColorStop(0.5, '#044f37');
-  bgGrad.addColorStop(1, '#012b1e');
+  // 1. Rich Deep Tropical Gradient Background with radial ambient light
+  const bgGrad = ctx.createRadialGradient(size / 2, size / 2, 80, size / 2, size / 2, 720);
+  bgGrad.addColorStop(0, '#043b2b');
+  bgGrad.addColorStop(0.35, '#02261b');
+  bgGrad.addColorStop(0.75, '#01150e');
+  bgGrad.addColorStop(1, '#000c08');
   ctx.fillStyle = bgGrad;
   ctx.fillRect(0, 0, size, size);
 
+  // Soft Ambient Backlight Glow (Gold & Pink halo in center background)
   const cx = size / 2;
   const cy = size / 2 - 20;
   const avatarRadius = 360;
+
+  const ambientGlow = ctx.createRadialGradient(cx, cy, 100, cx, cy, 500);
+  ambientGlow.addColorStop(0, 'rgba(255, 199, 0, 0.18)');
+  ambientGlow.addColorStop(0.4, 'rgba(255, 30, 121, 0.10)');
+  ambientGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+  ctx.fillStyle = ambientGlow;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 500, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Subtle Background Sunburst Ray Lines
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255, 199, 0, 0.05)';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 36; i++) {
+    const angle = (i * 10 * Math.PI) / 180;
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(angle) * 380, cy + Math.sin(angle) * 380);
+    ctx.lineTo(cx + Math.cos(angle) * 680, cy + Math.sin(angle) * 680);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  // Outer Decorative Frame Border Line
+  ctx.save();
+  ctx.strokeStyle = 'rgba(255, 199, 0, 0.35)';
+  ctx.lineWidth = 3;
+  drawRoundedRect(ctx, 16, 16, size - 32, size - 32, 28);
+  ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(255, 30, 121, 0.2)';
+  ctx.lineWidth = 1.5;
+  drawRoundedRect(ctx, 24, 24, size - 48, size - 48, 20);
+  ctx.stroke();
+
+  // Corner Sparkle Star Accents
+  drawSparkleStar(ctx, 42, 42, 10, '#ffc700');
+  drawSparkleStar(ctx, size - 42, 42, 10, '#ffc700');
+  drawSparkleStar(ctx, 42, size - 42, 10, '#ff1e79');
+  drawSparkleStar(ctx, size - 42, size - 42, 10, '#ff1e79');
+  ctx.restore();
+
+  // Tropical Palm Leaves in Canvas Corners
+  drawPalmLeaf(ctx, 95, 105, 1.2, 35, '#ffc700', 0.16);
+  drawPalmLeaf(ctx, size - 95, 105, 1.2, -35, '#ffc700', 0.16);
+  drawPalmLeaf(ctx, 95, size - 115, 1.3, 145, '#10b981', 0.14);
+  drawPalmLeaf(ctx, size - 95, size - 115, 1.3, -145, '#10b981', 0.14);
+
+  // 2. Photo Circle Container with Soft Shadow
+  ctx.save();
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+  ctx.shadowBlur = 35;
+  ctx.shadowOffsetY = 12;
+  ctx.beginPath();
+  ctx.arc(cx, cy, avatarRadius, 0, Math.PI * 2);
+  ctx.fillStyle = '#011c14';
+  ctx.fill();
+  ctx.restore();
 
   if (photoImg) {
     drawUserPhoto(ctx, photoImg, cx, cy, avatarRadius * 2, avatarRadius * 2, transform, true);
@@ -503,137 +633,352 @@ export async function renderFormatAPFP(
     ctx.arc(cx, cy, avatarRadius, 0, Math.PI * 2);
     ctx.fillStyle = '#023827';
     ctx.fill();
+
+    // Inner dashed guide ring
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.3)';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([10, 10]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius - 50, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Sparkle Icon & Styled Placeholder Text
+    drawSparkleStar(ctx, cx, cy - 50, 22, '#ffc700');
     ctx.fillStyle = '#10b981';
-    ctx.font = '600 32px "Plus Jakarta Sans", sans-serif';
+    ctx.font = '800 32px "Syne", "Plus Jakarta Sans", sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('UPLOAD YOUR PHOTO', cx, cy);
+    ctx.fillText('UPLOAD YOUR PHOTO', cx, cy + 18);
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.font = '600 18px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText('Click to choose file or drag photo here', cx, cy + 54);
     ctx.restore();
   }
 
+  // 3. Multi-Layer Frame Rings Based on Style
   ctx.save();
 
   if (frameStyle === 'stamp') {
+    // Outer Vintage Stamp Scalloped Border
+    ctx.fillStyle = '#fffbea';
+    ctx.strokeStyle = '#044f37';
+    ctx.lineWidth = 2.5;
+
+    const numScallops = 44;
+    for (let i = 0; i < numScallops; i++) {
+      const angle = (i * 2 * Math.PI) / numScallops;
+      const sx = cx + Math.cos(angle) * (avatarRadius + 18);
+      const sy = cy + Math.sin(angle) * (avatarRadius + 18);
+      ctx.beginPath();
+      ctx.arc(sx, sy, 13, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Solid Cream Ring Base
     ctx.strokeStyle = '#fffbea';
-    ctx.lineWidth = 14;
+    ctx.lineWidth = 22;
     ctx.beginPath();
     ctx.arc(cx, cy, avatarRadius + 10, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.strokeStyle = '#ffc700';
+    // Airmail Dashed Striped Accent
+    ctx.strokeStyle = '#e11d48';
     ctx.lineWidth = 6;
-    ctx.setLineDash([12, 12]);
+    ctx.setLineDash([14, 14]);
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 18, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#ffc700';
+    ctx.lineDashOffset = 14;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 18, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+
+    // Inner Crisp Border
+    ctx.strokeStyle = '#044f37';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius, 0, Math.PI * 2);
+    ctx.stroke();
+
+  } else if (frameStyle === 'gold') {
+    // Golden Sunset Rays behind ring
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255, 199, 0, 0.22)';
+    ctx.lineWidth = 3.5;
+    for (let i = 0; i < 24; i++) {
+      const angle = (i * 2 * Math.PI) / 24;
+      const x1 = cx + Math.cos(angle) * (avatarRadius + 12);
+      const y1 = cy + Math.sin(angle) * (avatarRadius + 12);
+      const x2 = cx + Math.cos(angle) * (avatarRadius + 50);
+      const y2 = cy + Math.sin(angle) * (avatarRadius + 50);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Multi-stop Metallic Gold Gradient Ring
+    const goldGrad = ctx.createLinearGradient(cx - avatarRadius, cy - avatarRadius, cx + avatarRadius, cy + avatarRadius);
+    goldGrad.addColorStop(0, '#fffbea');
+    goldGrad.addColorStop(0.2, '#ffe066');
+    goldGrad.addColorStop(0.5, '#ffc700');
+    goldGrad.addColorStop(0.8, '#d49400');
+    goldGrad.addColorStop(1, '#ffc700');
+
+    ctx.strokeStyle = goldGrad;
+    ctx.lineWidth = 24;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 12, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Outer & Inner Gold Concentric Line Highlights
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 1, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = '#ffd700';
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(cx, cy, avatarRadius + 24, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.setLineDash([]);
-  } else if (frameStyle === 'gold') {
+
+  } else if (frameStyle === 'neon') {
+    // Cyber Glow Dual Neon Rings
+    ctx.shadowColor = '#00f2fe';
+    ctx.shadowBlur = 24;
+    ctx.strokeStyle = '#00f2fe';
+    ctx.lineWidth = 14;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 16, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.shadowColor = '#ff1e79';
+    ctx.shadowBlur = 18;
+    ctx.strokeStyle = '#ff1e79';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 6, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Corner HUD Nodes
+    const bracketDist = avatarRadius + 32;
+    const angles = [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+    for (const a of angles) {
+      const bx = cx + Math.cos(a) * bracketDist;
+      const by = cy + Math.sin(a) * bracketDist;
+      drawSparkleStar(ctx, bx, by, 9, '#00f2fe');
+    }
+
+  } else {
+    // 'tropical' Default Goa Signature Frame
+    // Outer Glow Ring
+    ctx.shadowColor = '#ffc700';
+    ctx.shadowBlur = 25;
+    ctx.strokeStyle = 'rgba(255, 199, 0, 0.4)';
+    ctx.lineWidth = 10;
+    ctx.beginPath();
+    ctx.arc(cx, cy, avatarRadius + 14, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Bold Gradient Sunset/Gold Ring
     const grad = ctx.createLinearGradient(cx - avatarRadius, cy - avatarRadius, cx + avatarRadius, cy + avatarRadius);
-    grad.addColorStop(0, '#ffe066');
-    grad.addColorStop(0.5, '#ffc700');
-    grad.addColorStop(1, '#d49400');
+    grad.addColorStop(0, '#ffc700');
+    grad.addColorStop(0.4, '#ff5e62');
+    grad.addColorStop(0.7, '#ff1e79');
+    grad.addColorStop(1, '#ffc700');
+
     ctx.strokeStyle = grad;
     ctx.lineWidth = 22;
     ctx.beginPath();
     ctx.arc(cx, cy, avatarRadius + 12, 0, Math.PI * 2);
     ctx.stroke();
-  } else if (frameStyle === 'neon') {
-    ctx.strokeStyle = '#ff1e79';
-    ctx.lineWidth = 16;
-    ctx.shadowColor = '#ff1e79';
-    ctx.shadowBlur = 20;
+
+    // Tech Dashed Orbit Ring
+    ctx.strokeStyle = '#fffbea';
+    ctx.lineWidth = 3;
+    ctx.setLineDash([12, 16]);
     ctx.beginPath();
-    ctx.arc(cx, cy, avatarRadius + 12, 0, Math.PI * 2);
+    ctx.arc(cx, cy, avatarRadius + 28, 0, Math.PI * 2);
     ctx.stroke();
-    ctx.shadowBlur = 0;
-  } else {
+    ctx.setLineDash([]);
+
+    // Inner Gold Rim Line
     ctx.strokeStyle = '#ffc700';
-    ctx.lineWidth = 18;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.arc(cx, cy, avatarRadius + 12, 0, Math.PI * 2);
+    ctx.arc(cx, cy, avatarRadius + 1, 0, Math.PI * 2);
     ctx.stroke();
 
-    ctx.strokeStyle = '#ff1e79';
-    ctx.lineWidth = 6;
-    ctx.beginPath();
-    ctx.arc(cx, cy, avatarRadius + 24, 0, Math.PI * 2);
-    ctx.stroke();
+    // 4 Cardinal Sparkle Stars
+    drawSparkleStar(ctx, cx, cy - avatarRadius - 12, 14, '#fffbea');
+    drawSparkleStar(ctx, cx, cy + avatarRadius + 12, 14, '#fffbea');
+    drawSparkleStar(ctx, cx - avatarRadius - 12, cy, 14, '#fffbea');
+    drawSparkleStar(ctx, cx + avatarRadius + 12, cy, 14, '#fffbea');
   }
 
   ctx.restore();
 
+  // 4. Header Top Badge Pill (🌴 HH GOA 2026 🌴)
   ctx.save();
-  ctx.translate(cx, 80);
-  drawRoundedRect(ctx, -180, -30, 360, 60, 16);
-  ctx.fillStyle = '#ff1e79';
+  ctx.translate(cx, 75);
+
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.55)';
+  ctx.shadowBlur = 18;
+  ctx.shadowOffsetY = 6;
+
+  const pillW = 400;
+  const pillH = 64;
+  drawRoundedRect(ctx, -pillW / 2, -pillH / 2, pillW, pillH, 20);
+  const topGrad = ctx.createLinearGradient(-pillW / 2, 0, pillW / 2, 0);
+  topGrad.addColorStop(0, '#ff1e79');
+  topGrad.addColorStop(0.5, '#ff5e62');
+  topGrad.addColorStop(1, '#ff1e79');
+  ctx.fillStyle = topGrad;
   ctx.fill();
-  ctx.strokeStyle = '#fffbea';
-  ctx.lineWidth = 3;
+
+  ctx.shadowColor = 'transparent';
+
+  ctx.strokeStyle = '#ffc700';
+  ctx.lineWidth = 3.5;
   ctx.stroke();
 
+  // Top Gloss Highlight
+  ctx.beginPath();
+  ctx.moveTo(-pillW / 2 + 10, -pillH / 2 + 3);
+  ctx.lineTo(pillW / 2 - 10, -pillH / 2 + 3);
+  ctx.lineTo(pillW / 2 - 20, 0);
+  ctx.lineTo(-pillW / 2 + 20, 0);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+  ctx.fill();
+
   ctx.fillStyle = '#ffffff';
-  ctx.font = '800 24px "Syne", sans-serif';
+  ctx.font = '900 26px "Syne", "Plus Jakarta Sans", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🌴 HH GOA 2026 🌴', 0, 0);
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+  ctx.shadowBlur = 6;
+  ctx.fillText('🌴 HH GOA 2026 🌴', 0, 2);
   ctx.restore();
 
+  // 5. Bottom Main Card Banner
   ctx.save();
-  ctx.translate(cx, size - 100);
+  ctx.translate(cx, size - 95);
 
-  drawRoundedRect(ctx, -340, -45, 680, 90, 24);
-  const bannerGrad = ctx.createLinearGradient(-340, 0, 340, 0);
-  bannerGrad.addColorStop(0, '#012b1e');
-  bannerGrad.addColorStop(0.5, '#044f37');
-  bannerGrad.addColorStop(1, '#012b1e');
+  const bW = 720;
+  const bH = 100;
+
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.65)';
+  ctx.shadowBlur = 24;
+  ctx.shadowOffsetY = 8;
+
+  drawRoundedRect(ctx, -bW / 2, -bH / 2, bW, bH, 26);
+  const bannerGrad = ctx.createLinearGradient(-bW / 2, 0, bW / 2, 0);
+  bannerGrad.addColorStop(0, '#011c14');
+  bannerGrad.addColorStop(0.3, '#044f37');
+  bannerGrad.addColorStop(0.7, '#044f37');
+  bannerGrad.addColorStop(1, '#011c14');
   ctx.fillStyle = bannerGrad;
   ctx.fill();
 
+  ctx.shadowColor = 'transparent';
+
+  // Double Gold Border
   ctx.strokeStyle = '#ffc700';
   ctx.lineWidth = 4;
   ctx.stroke();
 
-  ctx.fillStyle = '#ffc700';
-  ctx.font = '900 34px "Syne", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('HACKER HOUSE GOA', 0, -10);
+  drawRoundedRect(ctx, -bW / 2 + 6, -bH / 2 + 6, bW - 12, bH - 12, 20);
+  ctx.strokeStyle = 'rgba(255, 199, 0, 0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
 
-  ctx.fillStyle = '#fffbea';
-  ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
-  ctx.fillText('BUILD IN GOA, SHIP FROM PARADISE • 28-31 OCT', 0, 24);
-  ctx.restore();
-
-  ctx.save();
-  ctx.translate(size - 130, 130);
-  ctx.rotate((12 * Math.PI) / 180);
-  drawRoundedRect(ctx, -90, -25, 180, 50, 12);
+  // Banner Title
   ctx.fillStyle = '#ffc700';
-  ctx.fill();
-  ctx.fillStyle = '#011c14';
-  ctx.font = '800 18px "Syne", sans-serif';
+  ctx.font = '900 36px "Syne", sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('#FrameInGoa', 0, 0);
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+  ctx.shadowBlur = 8;
+  ctx.fillText('HACKER HOUSE GOA', 0, -14);
+
+  // Side Diamond Sparkle Accents on banner
+  drawSparkleStar(ctx, -230, 22, 6, '#ff1e79');
+  drawSparkleStar(ctx, 230, 22, 6, '#ff1e79');
+
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#fffbea';
+  ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
+  ctx.fillText('BUILD IN GOA, SHIP FROM PARADISE • 28-31 OCT', 0, 22);
   ctx.restore();
 
+  // 6. Top-Right Tilted Sticker (#FrameInGoa)
+  ctx.save();
+  ctx.translate(size - 135, 135);
+  ctx.rotate((12 * Math.PI) / 180);
+
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetY = 4;
+
+  drawRoundedRect(ctx, -95, -26, 190, 52, 14);
+  ctx.fillStyle = '#ffc700';
+  ctx.fill();
+
+  ctx.shadowColor = 'transparent';
+
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  ctx.fillStyle = '#011c14';
+  ctx.font = '900 20px "Syne", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('#FrameInGoa', 0, 1);
+  ctx.restore();
+
+  // 7. Bottom-Left Tilted Sticker Badge
   if (badgeText) {
     ctx.save();
-    ctx.translate(130, cy + avatarRadius - 40);
+    ctx.translate(135, cy + avatarRadius - 30);
     ctx.rotate((-12 * Math.PI) / 180);
-    drawRoundedRect(ctx, -80, -22, 160, 44, 10);
+
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+    ctx.shadowBlur = 12;
+    ctx.shadowOffsetY = 4;
+
+    const badgeWidth = Math.max(160, badgeText.length * 16 + 40);
+    drawRoundedRect(ctx, -badgeWidth / 2, -25, badgeWidth, 50, 14);
     ctx.fillStyle = '#e11d48';
     ctx.fill();
+
+    ctx.shadowColor = 'transparent';
+
     ctx.strokeStyle = '#ffc700';
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = '800 16px "Syne", sans-serif';
+    ctx.font = '900 18px "Syne", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(badgeText.toUpperCase(), 0, 0);
+    ctx.fillText(badgeText.toUpperCase(), 0, 1);
     ctx.restore();
   }
 }
+
 
 // ----------------------------------------------------
 // FORMAT B: BUILDER ID BADGE CANVAS RENDERER
